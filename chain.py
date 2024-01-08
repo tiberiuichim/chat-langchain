@@ -8,63 +8,32 @@ from fastapi.middleware.cors import CORSMiddleware
 from langchain.chat_models import ChatOpenAI
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.embeddings.voyageai import VoyageEmbeddings
-from langchain.prompts import (ChatPromptTemplate, MessagesPlaceholder,
-                               PromptTemplate)
+from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain.schema import Document
 from langchain.schema.embeddings import Embeddings
 from langchain.schema.language_model import BaseLanguageModel
 from langchain.schema.messages import AIMessage, HumanMessage
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.retriever import BaseRetriever
-from langchain.schema.runnable import (Runnable, RunnableBranch,
-                                       RunnableLambda, RunnableMap)
+from langchain.schema.runnable import (
+    Runnable,
+    RunnableBranch,
+    RunnableLambda,
+    RunnableMap,
+)
 from langchain.vectorstores.weaviate import Weaviate
 from langsmith import Client
 from pydantic import BaseModel
+from langchain.embeddings import HuggingFaceInstructEmbeddings
 
-from constants import WEAVIATE_DOCS_INDEX_NAME
-
-RESPONSE_TEMPLATE = """\
-You are an expert programmer and problem-solver, tasked with answering any question \
-about Langchain.
-
-Generate a comprehensive and informative answer of 80 words or less for the \
-given question based solely on the provided search results (URL and content). You must \
-only use information from the provided search results. Use an unbiased and \
-journalistic tone. Combine search results together into a coherent answer. Do not \
-repeat text. Cite search results using [${{number}}] notation. Only cite the most \
-relevant results that answer the question accurately. Place these citations at the end \
-of the sentence or paragraph that reference them - do not put them all at the end. If \
-different results refer to different entities within the same name, write separate \
-answers for each entity.
-
-You should use bullet points in your answer for readability. Put citations where they apply
-rather than putting them all at the end.
-
-If there is nothing in the context relevant to the question at hand, just say "Hmm, \
-I'm not sure." Don't try to make up an answer.
-
-Anything between the following `context`  html blocks is retrieved from a knowledge \
-bank, not part of the conversation with the user. 
-
-<context>
-    {context} 
-<context/>
-
-REMEMBER: If there is no relevant information within the context, just say "Hmm, I'm \
-not sure." Don't try to make up an answer. Anything between the preceding 'context' \
-html blocks is retrieved from a knowledge bank, not part of the conversation with the \
-user.\
-"""
-
-REPHRASE_TEMPLATE = """\
-Given the following conversation and a follow up question, rephrase the follow up \
-question to be a standalone question.
-
-Chat History:
-{chat_history}
-Follow Up Input: {question}
-Standalone Question:"""
+from constants import (
+    WEAVIATE_DOCS_INDEX_NAME,
+    EMBEDDING_MODEL_NAME,
+    WEAVIATE_URL,
+    WEAVIATE_API_KEY,
+    RESPONSE_TEMPLATE,
+    REPHRASE_TEMPLATE,
+)
 
 
 client = Client()
@@ -80,19 +49,21 @@ app.add_middleware(
 )
 
 
-WEAVIATE_URL = os.environ["WEAVIATE_URL"]
-WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
-
-
 class ChatRequest(BaseModel):
     question: str
     chat_history: Optional[List[Dict[str, str]]]
 
 
 def get_embeddings_model() -> Embeddings:
-    if os.environ.get("VOYAGE_API_KEY") and os.environ.get("VOYAGE_AI_MODEL"):
-        return VoyageEmbeddings(model=os.environ["VOYAGE_AI_MODEL"])
-    return OpenAIEmbeddings(chunk_size=200)
+    # if os.environ.get("VOYAGE_API_KEY") and os.environ.get("VOYAGE_AI_MODEL"):
+    #     return VoyageEmbeddings(model=os.environ["VOYAGE_AI_MODEL"])
+    # return OpenAIEmbeddings(chunk_size=200)
+
+    embeddings = HuggingFaceInstructEmbeddings(
+        model_name=EMBEDDING_MODEL_NAME,
+        model_kwargs={"device": "cuda"},
+    )
+    return embeddings
 
 
 def get_retriever() -> BaseRetriever:
@@ -126,7 +97,8 @@ def create_retriever_chain(
             RunnableLambda(lambda x: bool(x.get("chat_history"))).with_config(
                 run_name="HasChatHistoryCheck"
             ),
-            conversation_chain.with_config(run_name="RetrievalChainWithHistory"),
+            conversation_chain.with_config(
+                run_name="RetrievalChainWithHistory"),
         ),
         (
             RunnableLambda(itemgetter("question")).with_config(
@@ -150,7 +122,8 @@ def serialize_history(request: ChatRequest):
     converted_chat_history = []
     for message in chat_history:
         if message.get("human") is not None:
-            converted_chat_history.append(HumanMessage(content=message["human"]))
+            converted_chat_history.append(
+                HumanMessage(content=message["human"]))
         if message.get("ai") is not None:
             converted_chat_history.append(AIMessage(content=message["ai"]))
     return converted_chat_history
@@ -200,6 +173,7 @@ llm = ChatOpenAI(
     model="gpt-3.5-turbo-16k",
     streaming=True,
     temperature=0,
+    openai_api_base="http://localhost:8080/v1",
 )
 retriever = get_retriever()
 answer_chain = create_chain(

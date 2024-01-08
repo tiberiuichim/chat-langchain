@@ -9,20 +9,20 @@ from bs4 import BeautifulSoup, SoupStrainer
 from langchain.document_loaders import RecursiveUrlLoader, SitemapLoader
 from langchain.indexes import SQLRecordManager
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.utils.html import (PREFIXES_TO_IGNORE_REGEX,
-                                  SUFFIXES_TO_IGNORE_REGEX)
+from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
 from langchain.vectorstores.weaviate import Weaviate
 
 from _index import index
 from chain import get_embeddings_model
-from constants import WEAVIATE_DOCS_INDEX_NAME
+from constants import (
+    WEAVIATE_DOCS_INDEX_NAME,
+    WEAVIATE_API_KEY,
+    WEAVIATE_URL,
+    RECORD_MANAGER_DB_URL,
+)
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-WEAVIATE_URL = os.environ["WEAVIATE_URL"]
-WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
-RECORD_MANAGER_DB_URL = os.environ["RECORD_MANAGER_DB_URL"]
 
 
 def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
@@ -98,13 +98,15 @@ def load_api_docs():
 
 def ingest_docs():
     docs_from_documentation = load_langchain_docs()
-    logger.info(f"Loaded {len(docs_from_documentation)} docs from documentation")
+    logger.info(
+        f"Loaded {len(docs_from_documentation)} docs from documentation")
     docs_from_api = load_api_docs()
     logger.info(f"Loaded {len(docs_from_api)} docs from API")
     docs_from_langsmith = load_langsmith_docs()
     logger.info(f"Loaded {len(docs_from_langsmith)} docs from Langsmith")
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=4000, chunk_overlap=200)
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=4000, chunk_overlap=200)
     docs_transformed = text_splitter.split_documents(
         docs_from_documentation + docs_from_api + docs_from_langsmith
     )
@@ -143,11 +145,13 @@ def ingest_docs():
         vectorstore,
         cleanup="full",
         source_id_key="source",
-        force_update=(os.environ.get("FORCE_UPDATE") or "false").lower() == "true",
+        force_update=(os.environ.get("FORCE_UPDATE")
+                      or "false").lower() == "true",
     )
 
     logger.info(f"Indexing stats: {indexing_stats}")
-    num_vecs = client.query.aggregate(WEAVIATE_DOCS_INDEX_NAME).with_meta_count().do()
+    num_vecs = client.query.aggregate(
+        WEAVIATE_DOCS_INDEX_NAME).with_meta_count().do()
     logger.info(
         f"LangChain now has this many vectors: {num_vecs}",
     )
