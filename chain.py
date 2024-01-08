@@ -170,10 +170,11 @@ def create_chain(
 
 
 llm = ChatOpenAI(
-    model="gpt-3.5-turbo-16k",
+    # model="gpt-3.5-turbo-16k",
+    model="TheBloke/Llama-2-7B-AWQ",
     streaming=True,
     temperature=0,
-    openai_api_base="http://localhost:8080/v1",
+    openai_api_base="http://localhost:8000/v1",
 )
 retriever = get_retriever()
 answer_chain = create_chain(
