@@ -30,6 +30,7 @@ import { apiBaseUrl } from "../utils/constants";
 export function ChatWindow(props: {
   placeholder?: string;
   titleText?: string;
+  presetQuestions: string[]
 }) {
   const conversationId = uuidv4();
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
@@ -41,7 +42,7 @@ export function ChatWindow(props: {
     { human: string; ai: string }[]
   >([]);
 
-  const { placeholder, titleText = "An LLM" } = props;
+  const { placeholder, titleText = "An LLM", presetQuestions } = props;
 
   const sendMessage = async (message?: string) => {
     if (messageContainerRef.current) {
@@ -210,7 +211,7 @@ export function ChatWindow(props: {
               ></ChatMessageBubble>
             ))
         ) : (
-          <EmptyState onChoice={sendInitialQuestion} />
+          <EmptyState onChoice={sendInitialQuestion} questions={presetQuestions} />
         )}
       </div>
       <InputGroup size="md" alignItems={"center"}>

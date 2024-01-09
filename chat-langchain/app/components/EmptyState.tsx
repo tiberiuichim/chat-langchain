@@ -8,10 +8,35 @@ import {
   Spacer,
 } from "@chakra-ui/react";
 
-export function EmptyState(props: { onChoice: (question: string) => any }) {
+function QuestionCard({ onClick, question }) {
+  return <Card
+    onClick={onClick}
+    onKeyDown={onClick}
+    width={"48%"}
+    backgroundColor={"rgb(58, 58, 61)"}
+    _hover={{ backgroundColor: "rgb(78,78,81)" }}
+    cursor={"pointer"}
+    justifyContent={"center"}
+  >
+    <CardHeader justifyContent={"center"}>
+      <Heading
+        fontSize="lg"
+        fontWeight={"medium"}
+        mb={1}
+        color={"gray.200"}
+        textAlign={"center"}
+      >
+        {question}
+      </Heading>
+    </CardHeader>
+  </Card>
+}
+
+export function EmptyState(props: { questions: string[], onChoice: (question: string) => any }) {
   const handleClick = (e: MouseEvent) => {
     props.onChoice((e.target as HTMLDivElement).innerText);
   };
+  const { questions } = props
   return (
     <div className="rounded flex flex-col items-center max-w-full md:p-8">
       <Heading fontSize="3xl" fontWeight={"medium"} mb={1} color={"white"}>
@@ -25,93 +50,17 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         marginTop={"10px"}
         textAlign={"center"}
       >
-        Ask me anything about the environment
+        Try one of the questions bellow
       </Heading>
       <Flex marginTop={"25px"} grow={1} maxWidth={"800px"} width={"100%"}>
-        <Card
-          onMouseUp={handleClick}
-          width={"48%"}
-          backgroundColor={"rgb(58, 58, 61)"}
-          _hover={{ backgroundColor: "rgb(78,78,81)" }}
-          cursor={"pointer"}
-          justifyContent={"center"}
-        >
-          <CardHeader justifyContent={"center"}>
-            <Heading
-              fontSize="lg"
-              fontWeight={"medium"}
-              mb={1}
-              color={"gray.200"}
-              textAlign={"center"}
-            >
-              How many heat pumps were sold?
-            </Heading>
-          </CardHeader>
-        </Card>
+        <QuestionCard question={questions[0]} onClick={handleClick} />
         <Spacer />
-        <Card
-          onMouseUp={handleClick}
-          width={"48%"}
-          backgroundColor={"rgb(58, 58, 61)"}
-          _hover={{ backgroundColor: "rgb(78,78,81)" }}
-          cursor={"pointer"}
-          justifyContent={"center"}
-        >
-          <CardHeader justifyContent={"center"}>
-            <Heading
-              fontSize="lg"
-              fontWeight={"medium"}
-              mb={1}
-              color={"gray.200"}
-              textAlign={"center"}
-            >
-              What is the LULUCF sector?
-            </Heading>
-          </CardHeader>
-        </Card>
+        <QuestionCard question={questions[1]} onClick={handleClick} />
       </Flex>
       <Flex marginTop={"25px"} grow={1} maxWidth={"800px"} width={"100%"}>
-        <Card
-          onMouseUp={handleClick}
-          width={"48%"}
-          backgroundColor={"rgb(58, 58, 61)"}
-          _hover={{ backgroundColor: "rgb(78,78,81)" }}
-          cursor={"pointer"}
-          justifyContent={"center"}
-        >
-          <CardHeader justifyContent={"center"}>
-            <Heading
-              fontSize="lg"
-              fontWeight={"medium"}
-              mb={1}
-              color={"gray.200"}
-              textAlign={"center"}
-            >
-              How much did the industrial sector contribute to total gas emissions?
-            </Heading>
-          </CardHeader>
-        </Card>
+        <QuestionCard question={questions[2]} onClick={handleClick} />
         <Spacer />
-        <Card
-          onMouseUp={handleClick}
-          width={"48%"}
-          backgroundColor={"rgb(58, 58, 61)"}
-          _hover={{ backgroundColor: "rgb(78,78,81)" }}
-          cursor={"pointer"}
-          justifyContent={"center"}
-        >
-          <CardHeader justifyContent={"center"}>
-            <Heading
-              fontSize="lg"
-              fontWeight={"medium"}
-              mb={1}
-              color={"gray.200"}
-              textAlign={"center"}
-            >
-              What is the plan to tackle greenhouse emissions?
-            </Heading>
-          </CardHeader>
-        </Card>
+        <QuestionCard question={questions[3]} onClick={handleClick} />
       </Flex>
     </div>
   );
