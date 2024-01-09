@@ -1,4 +1,3 @@
-import os
 from operator import itemgetter
 from typing import Dict, List, Optional, Sequence
 
@@ -6,8 +5,7 @@ import weaviate
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langchain.chat_models import ChatOpenAI
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.embeddings.voyageai import VoyageEmbeddings
+
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain.schema import Document
 from langchain.schema.embeddings import Embeddings
@@ -35,6 +33,9 @@ from constants import (
     REPHRASE_TEMPLATE,
 )
 
+# import os
+# from langchain.embeddings.openai import OpenAIEmbeddings
+# from langchain.embeddings.voyageai import VoyageEmbeddings
 
 client = Client()
 
@@ -171,10 +172,11 @@ def create_chain(
 
 llm = ChatOpenAI(
     # model="gpt-3.5-turbo-16k",
-    model="TheBloke/Llama-2-7B-AWQ",
+    # model="TheBloke/Llama-2-7B-AWQ",
+    model="llama-2-7b.Q5_K_S.gguf",
     streaming=True,
     temperature=0,
-    openai_api_base="http://localhost:8000/v1",
+    openai_api_base="http://localhost:5000/v1",
 )
 retriever = get_retriever()
 answer_chain = create_chain(
