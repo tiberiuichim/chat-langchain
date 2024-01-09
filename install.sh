@@ -21,3 +21,5 @@ virtualenv .venv
 .venv/bin/pip install openai
 pip install pdfminer.six
 .venv/bin/pip install pdfminer.six
+.venv/bin/pip install unstructured[local-inference]
+.venv/bin/pip install "unstructured[all-docs]"
