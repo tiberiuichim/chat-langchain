@@ -7,6 +7,7 @@ import { ChatMessageBubble, Message } from "../components/ChatMessageBubble";
 import { AutoResizeTextarea } from "./AutoResizeTextarea";
 import { marked } from "marked";
 import { Renderer } from "marked";
+
 import hljs from "highlight.js";
 import "highlight.js/styles/gradient-dark.css";
 
@@ -188,7 +189,7 @@ export function ChatWindow(props: {
             {titleText}
           </Heading>
           <Heading fontSize="md" fontWeight={"normal"} mb={1} color={"white"}>
-            We appreciate feedback!
+            Note: chat results may not be acurate
           </Heading>
         </Flex>
       )}
@@ -253,7 +254,7 @@ export function ChatWindow(props: {
             target="_blank"
             className="text-white flex items-center"
           >
-            <img src="https://www.eea.europa.eu/static/media/eea-logo-white.da328514.svg" className="h-4 mr-1" />
+            <img alt="EEA" src="https://www.eea.europa.eu/static/media/eea-logo-white.da328514.svg" className="h-4 mr-1" />
           </a>
         </footer>
       ) : (

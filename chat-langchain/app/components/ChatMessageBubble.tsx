@@ -125,7 +125,7 @@ export function ChatMessageBubble(props: {
   const upButtonRef = useRef(null);
   const downButtonRef = useRef(null);
 
-  const cumulativeOffset = function (element: HTMLElement | null) {
+  const cumulativeOffset = function(element: HTMLElement | null) {
     var top = 0,
       left = 0;
     do {
@@ -213,12 +213,12 @@ export function ChatMessageBubble(props: {
   const answerElements =
     role === "assistant"
       ? createAnswerElements(
-          content,
-          filteredSources,
-          sourceIndexMap,
-          highlighedSourceLinkStates,
-          setHighlightedSourceLinkStates,
-        )
+        content,
+        filteredSources,
+        sourceIndexMap,
+        highlighedSourceLinkStates,
+        setHighlightedSourceLinkStates,
+      )
       : [];
 
   const animateButton = (buttonId: string) => {
@@ -306,62 +306,6 @@ export function ChatMessageBubble(props: {
           {answerElements}
         </Box>
       )}
-
-      {props.message.role !== "user" &&
-        props.isMostRecent &&
-        props.messageCompleted && (
-          <HStack spacing={2}>
-            <Button
-              ref={upButtonRef}
-              size="sm"
-              variant="outline"
-              colorScheme={feedback === null ? "green" : "gray"}
-              onClick={() => {
-                if (feedback === null && props.message.runId) {
-                  sendUserFeedback(1, "user_score");
-                  animateButton("upButton");
-                  setFeedbackColor("border-4 border-green-300");
-                } else {
-                  toast.error("You have already provided your feedback.");
-                }
-              }}
-            >
-              👍
-            </Button>
-            <Button
-              ref={downButtonRef}
-              size="sm"
-              variant="outline"
-              colorScheme={feedback === null ? "red" : "gray"}
-              onClick={() => {
-                if (feedback === null && props.message.runId) {
-                  sendUserFeedback(0, "user_score");
-                  animateButton("downButton");
-                  setFeedbackColor("border-4 border-red-300");
-                } else {
-                  toast.error("You have already provided your feedback.");
-                }
-              }}
-            >
-              👎
-            </Button>
-            <Spacer />
-            <Button
-              size="sm"
-              variant="outline"
-              colorScheme={runId === null ? "blue" : "gray"}
-              onClick={(e) => {
-                e.preventDefault();
-                viewTrace();
-              }}
-              isLoading={traceIsLoading}
-              loadingText="🔄"
-              color="white"
-            >
-              🦜🛠️ View trace
-            </Button>
-          </HStack>
-        )}
 
       {!isUser && <Divider mt={4} mb={4} />}
     </VStack>

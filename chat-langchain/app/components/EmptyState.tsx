@@ -25,10 +25,7 @@ export function EmptyState(props: { onChoice: (question: string) => any }) {
         marginTop={"10px"}
         textAlign={"center"}
       >
-        Ask me anything about the environment, based on{" "}
-        <Link href="https://eea.europa.eu/" color={"blue.200"}>
-          European Environment Agency
-        </Link>
+        Ask me anything about the environment
       </Heading>
       <Flex marginTop={"25px"} grow={1} maxWidth={"800px"} width={"100%"}>
         <Card

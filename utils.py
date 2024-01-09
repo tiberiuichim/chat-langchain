@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup  # , SoupStrainer
+import re
 from langchain.text_splitter import (
     CharacterTextSplitter,
     Language,
@@ -13,7 +15,14 @@ import logging
 from constants import (
     DOCUMENT_MAP,
     INGEST_THREADS,
+    SPLITTER_CHUNK_OVERLAP,
+    SPLITTER_CHUNK_SIZE,
 )
+
+
+# from parser import langchain_docs_extractor
+# from langchain.document_loaders import RecursiveUrlLoader, SitemapLoader
+# from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
 
 
 def file_log(logentry):
@@ -106,20 +115,23 @@ def load_documents(source_dir: str) -> list[Document]:
 # https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2
 # https://github.com/weaviate/t2v-gpt4all-models?tab=readme-ov-file
 
-CHUNK_SIZE = 1000
-CHUNK_OVERLAP = 200
-
 text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+    chunk_size=SPLITTER_CHUNK_SIZE, chunk_overlap=SPLITTER_CHUNK_OVERLAP
 )
 python_splitter = RecursiveCharacterTextSplitter.from_language(
-    language=Language.PYTHON, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+    language=Language.PYTHON,
+    chunk_size=SPLITTER_CHUNK_SIZE,
+    chunk_overlap=SPLITTER_CHUNK_OVERLAP,
 )
 ts_splitter = RecursiveCharacterTextSplitter.from_language(
-    language=Language.TS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+    language=Language.TS,
+    chunk_size=SPLITTER_CHUNK_SIZE,
+    chunk_overlap=SPLITTER_CHUNK_OVERLAP,
 )
 js_splitter = RecursiveCharacterTextSplitter.from_language(
-    language=Language.JS, chunk_size=CHUNK_SIZE, chunk_overlap=CHUNK_OVERLAP
+    language=Language.JS,
+    chunk_size=SPLITTER_CHUNK_SIZE,
+    chunk_overlap=SPLITTER_CHUNK_OVERLAP,
 )
 
 
@@ -161,3 +173,74 @@ def split_documents(documents: list[Document], tokenizer=None) -> list[Document]
         texts.extend(splitter.split_documents(ext_docs))
 
     return texts
+
+
+def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
+    title = soup.find("title")
+    description = soup.find("meta", attrs={"name": "description"})
+    html = soup.find("html")
+    return {
+        "source": meta["loc"],
+        "title": title.get_text() if title else "",
+        "description": description.get("content", "") if description else "",
+        "language": html.get("lang", "") if html else "",
+        **meta,
+    }
+
+
+def simple_extractor(html: str) -> str:
+    soup = BeautifulSoup(html, "lxml")
+    return re.sub(r"\n\n+", "\n\n", soup.text).strip()
+
+
+# def load_langchain_docs():
+#     return SitemapLoader(
+#         "https://python.langchain.com/sitemap.xml",
+#         filter_urls=["https://python.langchain.com/"],
+#         parsing_function=langchain_docs_extractor,
+#         default_parser="lxml",
+#         bs_kwargs={
+#             "parse_only": SoupStrainer(
+#                 name=("article", "title", "html", "lang", "content")
+#             ),
+#         },
+#         meta_function=metadata_extractor,
+#     ).load()
+#
+#
+# def load_langsmith_docs():
+#     return RecursiveUrlLoader(
+#         url="https://docs.smith.langchain.com/",
+#         max_depth=8,
+#         extractor=simple_extractor,
+#         prevent_outside=True,
+#         use_async=True,
+#         timeout=600,
+#         # Drop trailing / to avoid duplicate pages.
+#         link_regex=(
+#             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
+#             r"(?:[\#'\"]|\/[\#'\"])"
+#         ),
+#         check_response_status=True,
+#     ).load()
+#
+#
+# def load_api_docs():
+#     return RecursiveUrlLoader(
+#         url="https://api.python.langchain.com/en/latest/",
+#         max_depth=8,
+#         extractor=simple_extractor,
+#         prevent_outside=True,
+#         use_async=True,
+#         timeout=600,
+#         # Drop trailing / to avoid duplicate pages.
+#         link_regex=(
+#             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
+#             r"(?:[\#'\"]|\/[\#'\"])"
+#         ),
+#         check_response_status=True,
+#         exclude_dirs=(
+#             "https://api.python.langchain.com/en/latest/_sources",
+#             "https://api.python.langchain.com/en/latest/_modules",
+#         ),
+#     ).load()
