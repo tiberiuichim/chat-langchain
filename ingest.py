@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 def ingest_docs():
     documents = load_documents(DOCUMENTS_DIR)
     logger.info(f"Loaded {len(documents)} from {DOCUMENTS_DIR}")
-    # )
     docs_transformed = split_documents(documents, tokenizer=None)
 
     # We try to return 'source' and 'title' metadata when querying vector store and
@@ -39,7 +38,7 @@ def ingest_docs():
         if "source" not in doc.metadata:
             doc.metadata["source"] = ""
         if "title" not in doc.metadata:
-            doc.metadata["title"] = ""
+            doc.metadata["title"] = doc.metadata["source"]
 
     client = weaviate.Client(
         url=WEAVIATE_URL,

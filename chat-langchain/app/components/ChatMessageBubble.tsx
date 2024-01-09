@@ -9,9 +9,7 @@ import {
   Heading,
   HStack,
   Box,
-  Button,
   Divider,
-  Spacer,
 } from "@chakra-ui/react";
 import { sendFeedback } from "../utils/sendFeedback";
 import { apiBaseUrl } from "../utils/constants";
@@ -118,10 +116,10 @@ export function ChatMessageBubble(props: {
   const { role, content, runId } = props.message;
   const isUser = role === "user";
   const [isLoading, setIsLoading] = useState(false);
-  const [traceIsLoading, setTraceIsLoading] = useState(false);
+  // const [traceIsLoading, setTraceIsLoading] = useState(false);
+  // const [feedbackColor, setFeedbackColor] = useState("");
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [comment, setComment] = useState("");
-  const [feedbackColor, setFeedbackColor] = useState("");
   const upButtonRef = useRef(null);
   const downButtonRef = useRef(null);
 
@@ -170,35 +168,6 @@ export function ChatMessageBubble(props: {
       toast.error(e.message);
     }
     setIsLoading(false);
-  };
-  const viewTrace = async () => {
-    try {
-      setTraceIsLoading(true);
-      const response = await fetch(apiBaseUrl + "/get_trace", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          run_id: runId,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.code === 400) {
-        toast.error("Unable to view trace");
-        throw new Error("Unable to view trace");
-      } else {
-        const url = data.replace(/['"]+/g, "");
-        window.open(url, "_blank");
-        setTraceIsLoading(false);
-      }
-    } catch (e: any) {
-      console.error("Error:", e);
-      setTraceIsLoading(false);
-      toast.error(e.message);
-    }
   };
 
   const sources = props.message.sources ?? [];
