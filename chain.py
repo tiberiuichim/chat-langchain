@@ -31,6 +31,7 @@ from constants import (
     WEAVIATE_API_KEY,
     RESPONSE_TEMPLATE,
     REPHRASE_TEMPLATE,
+    RETRIEVER_K,
 )
 
 # import os
@@ -80,7 +81,9 @@ def get_retriever() -> BaseRetriever:
         by_text=False,
         attributes=["source", "title"],
     )
-    return weaviate_client.as_retriever(search_kwargs=dict(k=6))  # default k=6
+    return weaviate_client.as_retriever(
+        search_kwargs=dict(k=RETRIEVER_K)
+    )  # default k=6
 
 
 def create_retriever_chain(
