@@ -19,3 +19,5 @@ virtualenv .venv
 #.venv/bin/python app/server.py
 .venv/bin/pip install python-dotenv
 .venv/bin/pip install openai
+pip install pdfminer.six
+.venv/bin/pip install pdfminer.six

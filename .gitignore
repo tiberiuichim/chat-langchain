@@ -143,3 +143,4 @@ bin/
 pyvenv.cfg
 node_modules/
 .envrc
+/data/
