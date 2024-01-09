@@ -9,8 +9,8 @@ WEAVIATE_URL = os.environ["WEAVIATE_URL"]
 WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
 RECORD_MANAGER_DB_URL = os.environ["RECORD_MANAGER_DB_URL"]
 
-with open("response_template.txt") as f:
+with open(os.environ["RESPONSE_TEMPLATE"]) as f:
     RESPONSE_TEMPLATE = f.read()
 
-with open("rephrase_template.txt") as f:
+with open(os.environ["REPHRASE_TEMPLATE"]) as f:
     REPHRASE_TEMPLATE = f.read()

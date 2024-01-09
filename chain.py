@@ -173,7 +173,7 @@ def create_chain(
 llm = ChatOpenAI(
     # model="gpt-3.5-turbo-16k",
     # model="TheBloke/Llama-2-7B-AWQ",
-    model="llama-2-7b.Q5_K_S.gguf",
+    # model="llama-2-7b.Q5_K_S.gguf",
     streaming=True,
     temperature=0,
     openai_api_base="http://localhost:5000/v1",
