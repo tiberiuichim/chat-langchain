@@ -1,30 +1,20 @@
 "use client";
-
+import React, { useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { PlayIcon } from "lucide-react";
-
-import React, { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { applyPatch } from "fast-json-patch";
-import { useMarked } from "./useMarked";
 
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/EmptyState";
 import { ChatMessageBubble } from "./ChatMessageBubble";
 import { Footer } from "./Footer";
+import { useMarked } from "./useMarked";
+import { AutoResizeTextarea } from "./AutoResizeTextarea";
 
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
-
-import { Button } from "@/components/ui/button";
-import { AutoResizeTextarea } from "./AutoResizeTextarea";
-
-import { EmptyState } from "@/components/EmptyState";
-// import { ChatMessageBubble, Message } from "../components/ChatMessageBubble";
-
-// import { Heading, Flex, IconButton, InputGroup, InputRightElement, Spinner, } from "@chakra-ui/react";
-// import { ArrowUpIcon } from "@chakra-ui/icons";
-// import { Source } from "./SourceBubble";
-// import { apiBaseUrl } from "../utils/constants";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
@@ -147,7 +137,7 @@ export function ChatWindow(props: {
             const parsedResult = await parser(accumulatedMessage);
 
             setMessages((prevMessages) => {
-              let newMessages = [...prevMessages];
+              const newMessages = [...prevMessages];
               if (
                 messageIndex === null ||
                 newMessages[messageIndex] === undefined

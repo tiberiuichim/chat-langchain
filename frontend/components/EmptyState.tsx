@@ -1,7 +1,7 @@
 import { Card, CardHeader } from "@/components/ui/card";
 
 type QuestionCardProps = {
-  onClick: (e: any) => void;
+  onClick: (e: React.SyntheticEvent) => void;
   question: string;
 };
 
@@ -19,17 +19,19 @@ function QuestionCard(props: QuestionCardProps) {
   );
 }
 
-function Row({ children }) {
+const Row = (props: { children: React.JSX.Element[] }) => {
   return (
-    <div className="mt-2 flex space-x-4 grow max-w-xl w-full">{children}</div>
+    <div className="mt-2 flex space-x-4 grow max-w-xl w-full">
+      {props.children}
+    </div>
   );
-}
+};
 
 export function EmptyState(props: {
   questions: string[];
-  onChoice: (question: string) => any;
+  onChoice: (question: string) => void;
 }) {
-  const handleClick = (e: MouseEvent) => {
+  const handleClick = (e: React.SyntheticEvent) => {
     props.onChoice((e.target as HTMLDivElement).innerText);
   };
   const { questions } = props;
