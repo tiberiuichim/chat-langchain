@@ -1,41 +1,27 @@
-import { MouseEvent } from "react";
-// import {
-//   Heading,
-//   Link,
-//   Card,
-//   CardHeader,
-//   Flex,
-//   Spacer,
-// } from "@chakra-ui/react";
-
 import { Card, CardHeader } from "@/components/ui/card";
 
-function QuestionCard(props: {
-  onClick: (e: MouseEvent) => void;
+type QuestionCardProps = {
+  onClick: (e: any) => void;
   question: string;
-}) {
+};
+
+function QuestionCard(props: QuestionCardProps) {
   return (
     <Card
+      className="cursor-pointer bg-slate hover:bg-slate-100"
       onClick={props.onClick}
       onKeyDown={props.onClick}
-      width={"48%"}
-      backgroundColor={"rgb(58, 58, 61)"}
-      _hover={{ backgroundColor: "rgb(78,78,81)" }}
-      cursor={"pointer"}
-      justifyContent={"center"}
     >
-      <CardHeader justifyContent={"center"}>
-        <div
-          fontSize="lg"
-          fontWeight={"medium"}
-          mb={1}
-          color={"gray.200"}
-          textAlign={"center"}
-        >
-          {props.question}
-        </div>
+      <CardHeader>
+        <div className="text-xl color-gray ">{props.question}</div>
       </CardHeader>
     </Card>
+  );
+}
+
+function Row({ children }) {
+  return (
+    <div className="mt-2 flex space-x-4 grow max-w-xl w-full">{children}</div>
   );
 }
 
@@ -50,7 +36,7 @@ export function EmptyState(props: {
   return (
     <div className="rounded flex flex-col items-center max-w-full md:p-8">
       <div
-        className="text-3xl text-white"
+        className="text-3xl text-black"
         fontSize="3xl"
         fontWeight={"medium"}
         mb={1}
@@ -59,7 +45,7 @@ export function EmptyState(props: {
         Chat with (some) EEA documents
       </div>
       <div
-        className="text-xl text-white"
+        className="text-xl text-black"
         fontSize="xl"
         fontWeight={"normal"}
         mb={1}
@@ -69,14 +55,14 @@ export function EmptyState(props: {
       >
         Try one of the questions bellow
       </div>
-      <div marginTop={"25px"} grow={1} maxWidth={"800px"} width={"100%"}>
+      <Row>
         <QuestionCard question={questions[0]} onClick={handleClick} />
         <QuestionCard question={questions[1]} onClick={handleClick} />
-      </div>
-      <div marginTop={"25px"} grow={1} maxWidth={"800px"} width={"100%"}>
+      </Row>
+      <Row>
         <QuestionCard question={questions[2]} onClick={handleClick} />
         <QuestionCard question={questions[3]} onClick={handleClick} />
-      </div>
+      </Row>
     </div>
   );
 }
