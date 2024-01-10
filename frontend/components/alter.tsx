@@ -2,35 +2,47 @@
 
 import React, { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { EmptyState } from "../components/EmptyState";
-import { ChatMessageBubble, Message } from "../components/ChatMessageBubble";
-import { AutoResizeTextarea } from "./AutoResizeTextarea";
-import { marked } from "marked";
-import { Renderer } from "marked";
-
-import hljs from "highlight.js";
-import "highlight.js/styles/gradient-dark.css";
-
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { applyPatch } from "fast-json-patch";
+import { useMarked } from "./useMarked";
 
+import { ChatMessageBubble } from "./ChatMessageBubble";
+
+import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  Heading,
-  Flex,
-  IconButton,
-  InputGroup,
-  InputRightElement,
-  Spinner,
-} from "@chakra-ui/react";
-import { ArrowUpIcon } from "@chakra-ui/icons";
-import { Source } from "./SourceBubble";
-import { apiBaseUrl } from "../utils/constants";
+
+// import { EmptyState } from "../components/EmptyState";
+// import { ChatMessageBubble, Message } from "../components/ChatMessageBubble";
+// import { AutoResizeTextarea } from "./AutoResizeTextarea";
+
+// import { Heading, Flex, IconButton, InputGroup, InputRightElement, Spinner, } from "@chakra-ui/react";
+// import { ArrowUpIcon } from "@chakra-ui/icons";
+// import { Source } from "./SourceBubble";
+// import { apiBaseUrl } from "../utils/constants";
+
+const apiBaseUrl =
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+
+export type Source = {
+  url: string;
+  title: string;
+};
+
+export type Message = {
+  id: string;
+  createdAt?: Date;
+  content: string;
+  role: "system" | "user" | "assistant" | "function";
+  runId?: string;
+  sources?: Source[];
+  name?: string;
+  function_call?: { name: string };
+};
 
 export function ChatWindow(props: {
   placeholder?: string;
   titleText?: string;
-  presetQuestions: string[]
+  presetQuestions: string[];
 }) {
   const conversationId = uuidv4();
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
@@ -43,6 +55,8 @@ export function ChatWindow(props: {
   >([]);
 
   const { placeholder, titleText = "An LLM", presetQuestions } = props;
+
+  const { parser } = useMarked();
 
   const sendMessage = async (message?: string) => {
     if (messageContainerRef.current) {
@@ -64,7 +78,6 @@ export function ChatWindow(props: {
     let runId: string | undefined = undefined;
     let sources: Source[] | undefined = undefined;
     let messageIndex: number | null = null;
-
 
     try {
       const sourceStepName = "FindDocs";
@@ -91,7 +104,7 @@ export function ChatWindow(props: {
         onerror(err) {
           throw err;
         },
-        onmessage(msg) {
+        async onmessage(msg) {
           if (msg.event === "end") {
             setChatHistory((prevChatHistory) => [
               ...prevChatHistory,
@@ -124,7 +137,7 @@ export function ChatWindow(props: {
             if (Array.isArray(streamedResponse?.streamed_output)) {
               accumulatedMessage = streamedResponse.streamed_output.join("");
             }
-            const parsedResult = marked.parse(accumulatedMessage);
+            const parsedResult = await parser(accumulatedMessage);
 
             setMessages((prevMessages) => {
               let newMessages = [...prevMessages];
@@ -191,7 +204,10 @@ export function ChatWindow(props: {
               ></ChatMessageBubble>
             ))
         ) : (
-          <EmptyState onChoice={sendInitialQuestion} questions={presetQuestions} />
+          <EmptyState
+            onChoice={sendInitialQuestion}
+            questions={presetQuestions}
+          />
         )}
       </div>
       <InputGroup size="md" alignItems={"center"}>
@@ -235,7 +251,11 @@ export function ChatWindow(props: {
             target="_blank"
             className="text-white flex items-center"
           >
-            <img alt="EEA" src="https://www.eea.europa.eu/static/media/eea-logo-white.da328514.svg" className="h-4 mr-1" />
+            <img
+              alt="EEA"
+              src="https://www.eea.europa.eu/static/media/eea-logo-white.da328514.svg"
+              className="h-4 mr-1"
+            />
           </a>
         </footer>
       ) : (
