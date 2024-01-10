@@ -27,7 +27,11 @@ export const AutoResizeTextarea = React.forwardRef<
   // w="100%"
   // resize="none"
   return (
-    <Textarea ref={ref as React.RefObject<HTMLTextAreaElement>} {...props} />
+    <Textarea
+      className="w-full"
+      ref={ref as React.RefObject<HTMLTextAreaElement>}
+      {...props}
+    />
   );
 });
 

@@ -1,5 +1,8 @@
 "use client";
 
+import { Loader2 } from "lucide-react";
+import { PlayIcon } from "lucide-react";
+
 import React, { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
@@ -12,6 +15,7 @@ import { Footer } from "./Footer";
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
 
+import { Button } from "@/components/ui/button";
 import { AutoResizeTextarea } from "./AutoResizeTextarea";
 
 // import { EmptyState } from "../components/EmptyState";
@@ -214,7 +218,7 @@ export function ChatWindow(props: {
           />
         )}
       </div>
-      <div className="flex items-center">
+      <div className="flex w-full space-x-4">
         <AutoResizeTextarea
           value={input}
           maxRows={50}
@@ -230,21 +234,24 @@ export function ChatWindow(props: {
             }
           }}
         />
+        <Button
+          disabled={isLoading}
+          type="submit"
+          aria-label="Send"
+          onKeyDown={(e) => {
+            e.preventDefault();
+            sendMessage();
+          }}
+        >
+          {isLoading ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <PlayIcon />
+          )}
+        </Button>
       </div>
 
       {messages.length === 0 ? <Footer /> : ""}
     </div>
   );
 }
-
-// <IconButton
-//   colorScheme="blue"
-//   rounded={"full"}
-//   aria-label="Send"
-//   icon={isLoading ? <Spinner /> : <ArrowUpIcon />}
-//   type="submit"
-//   onClick={(e) => {
-//     e.preventDefault();
-//     sendMessage();
-//   }}
-// />
