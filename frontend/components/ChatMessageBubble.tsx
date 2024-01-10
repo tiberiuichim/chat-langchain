@@ -4,6 +4,8 @@ export function ChatMessageBubble(props: {
   message: Message;
   aiEmoji?: string;
   sources: any[];
+  isMostRecent: boolean;
+  messageCompleted: boolean;
 }) {
   const colorClassName =
     props.message.role === "user" ? "bg-sky-600" : "bg-slate-50 text-black";
@@ -46,4 +48,3 @@ export function ChatMessageBubble(props: {
     </div>
   );
 }
-

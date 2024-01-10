@@ -18,17 +18,13 @@ import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@/components/ui/button";
 import { AutoResizeTextarea } from "./AutoResizeTextarea";
 
-// import { EmptyState } from "../components/EmptyState";
+import { EmptyState } from "@/components/EmptyState";
 // import { ChatMessageBubble, Message } from "../components/ChatMessageBubble";
 
 // import { Heading, Flex, IconButton, InputGroup, InputRightElement, Spinner, } from "@chakra-ui/react";
 // import { ArrowUpIcon } from "@chakra-ui/icons";
 // import { Source } from "./SourceBubble";
 // import { apiBaseUrl } from "../utils/constants";
-
-function EmptyState() {
-  return "EmptyState";
-}
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
@@ -53,6 +49,7 @@ export function ChatWindow(props: {
   placeholder?: string;
   titleText?: string;
   presetQuestions: string[];
+  endpoint: string;
 }) {
   const conversationId = uuidv4();
   const messageContainerRef = useRef<HTMLDivElement | null>(null);
@@ -64,7 +61,7 @@ export function ChatWindow(props: {
     { human: string; ai: string }[]
   >([]);
 
-  const { placeholder, titleText = "An LLM", presetQuestions } = props;
+  const { placeholder, titleText, presetQuestions, endpoint } = props;
 
   const { parser } = useMarked();
 
@@ -92,7 +89,7 @@ export function ChatWindow(props: {
     try {
       const sourceStepName = "FindDocs";
       let streamedResponse: Record<string, any> = {};
-      await fetchEventSource(apiBaseUrl + "/chat/stream_log", {
+      await fetchEventSource(apiBaseUrl + endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -204,6 +201,7 @@ export function ChatWindow(props: {
             .reverse()
             .map((m, index) => (
               <ChatMessageBubble
+                sources={[]}
                 key={m.id}
                 message={{ ...m }}
                 aiEmoji="🦜"
