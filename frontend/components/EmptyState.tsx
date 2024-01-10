@@ -13,7 +13,7 @@ function QuestionCard(props: QuestionCardProps) {
       onKeyDown={props.onClick}
     >
       <CardHeader>
-        <div className="text-xl color-gray ">{props.question}</div>
+        <div className="text-lg color-gray ">{props.question}</div>
       </CardHeader>
     </Card>
   );
@@ -35,24 +35,8 @@ export function EmptyState(props: {
   const { questions } = props;
   return (
     <div className="rounded flex flex-col items-center max-w-full md:p-8">
-      <div
-        className="text-3xl text-black"
-        fontSize="3xl"
-        fontWeight={"medium"}
-        mb={1}
-        color={"white"}
-      >
-        Chat with (some) EEA documents
-      </div>
-      <div
-        className="text-xl text-black"
-        fontSize="xl"
-        fontWeight={"normal"}
-        mb={1}
-        color={"white"}
-        marginTop={"10px"}
-        textAlign={"center"}
-      >
+      <div className="text-3xl text-black">Chat with (some) EEA documents</div>
+      <div className="text-md text-black mt-2">
         Try one of the questions bellow
       </div>
       <Row>
