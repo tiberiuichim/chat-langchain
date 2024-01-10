@@ -12,28 +12,14 @@ import { ChatMessageBubble } from "./ChatMessageBubble";
 import { Footer } from "./Footer";
 import { useMarked } from "./useMarked";
 import { AutoResizeTextarea } from "./AutoResizeTextarea";
+import type { Source } from "./ChatMessageBubble";
+import type { Message } from "ai/react";
 
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
-
-export type Source = {
-  url: string;
-  title: string;
-};
-
-export type Message = {
-  id: string;
-  createdAt?: Date;
-  content: string;
-  role: "system" | "user" | "assistant" | "function";
-  runId?: string;
-  sources?: Source[];
-  name?: string;
-  function_call?: { name: string };
-};
 
 export function ChatWindow(props: {
   placeholder?: string;
@@ -78,7 +64,7 @@ export function ChatWindow(props: {
 
     try {
       const sourceStepName = "FindDocs";
-      let streamedResponse: Record<string, any> = {};
+      let streamedResponse: Record<string, unknown> = {};
       await fetchEventSource(apiBaseUrl + endpoint, {
         method: "POST",
         headers: {

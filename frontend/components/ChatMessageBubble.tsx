@@ -1,9 +1,35 @@
 import type { Message } from "ai/react";
+import { UserIcon } from "lucide-react";
+
+// export type Message = {
+//   id: string;
+//   createdAt?: Date;
+//   content: string;
+//   role: "system" | "user" | "assistant" | "function";
+//   runId?: string;
+//   sources?: Source[];
+//   name?: string;
+//   function_call?: { name: string };
+// };
+
+export type Source = {
+  url: string;
+  title: string;
+  pageContent: string;
+  metadata?: {
+    loc: {
+      lines: {
+        from: number;
+        to: number;
+      };
+    };
+  };
+};
 
 export function ChatMessageBubble(props: {
   message: Message;
   aiEmoji?: string;
-  sources: any[];
+  sources: Source[];
   isMostRecent: boolean;
   messageCompleted: boolean;
 }) {
@@ -11,7 +37,8 @@ export function ChatMessageBubble(props: {
     props.message.role === "user" ? "bg-lime-300" : "bg-slate-50 text-black";
   const alignmentClassName =
     props.message.role === "user" ? "ml-auto" : "mr-auto";
-  const prefix = props.message.role === "user" ? "🧑" : props.aiEmoji;
+  const prefix = props.message.role === "user" ? <UserIcon /> : props.aiEmoji;
+
   return (
     <div
       className={`${alignmentClassName} ${colorClassName} rounded px-4 py-2 max-w-[80%] mb-8 flex`}
