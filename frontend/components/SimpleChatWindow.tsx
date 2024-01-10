@@ -7,18 +7,24 @@ import { applyPatch } from "fast-json-patch";
 import { useMarked } from "./useMarked";
 
 import { ChatMessageBubble } from "./ChatMessageBubble";
+import { Footer } from "./Footer";
 
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
 
+import { AutoResizeTextarea } from "./AutoResizeTextarea";
+
 // import { EmptyState } from "../components/EmptyState";
 // import { ChatMessageBubble, Message } from "../components/ChatMessageBubble";
-// import { AutoResizeTextarea } from "./AutoResizeTextarea";
 
 // import { Heading, Flex, IconButton, InputGroup, InputRightElement, Spinner, } from "@chakra-ui/react";
 // import { ArrowUpIcon } from "@chakra-ui/icons";
 // import { Source } from "./SourceBubble";
 // import { apiBaseUrl } from "../utils/constants";
+
+function EmptyState() {
+  return "EmptyState";
+}
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
@@ -178,14 +184,12 @@ export function ChatWindow(props: {
   return (
     <div className="flex flex-col items-center p-8 rounded grow max-h-full">
       {messages.length > 0 && (
-        <Flex direction={"column"} alignItems={"center"} paddingBottom={"20px"}>
-          <Heading fontSize="2xl" fontWeight={"medium"} mb={1} color={"white"}>
-            {titleText}
-          </Heading>
-          <Heading fontSize="md" fontWeight={"normal"} mb={1} color={"white"}>
+        <div className="flex flex-col items-center py-8">
+          <div className="text-2xl font-medium text-white">{titleText}</div>
+          <div className="text-xl font-medium text-white">
             Note: chat results may not be acurate
-          </Heading>
-        </Flex>
+          </div>
+        </div>
       )}
       <div
         className="flex flex-col-reverse w-full mb-2 overflow-auto"
@@ -210,14 +214,11 @@ export function ChatWindow(props: {
           />
         )}
       </div>
-      <InputGroup size="md" alignItems={"center"}>
+      <div className="flex items-center">
         <AutoResizeTextarea
           value={input}
-          maxRows={5}
-          marginRight={"56px"}
+          maxRows={50}
           placeholder={placeholder}
-          textColor={"white"}
-          borderColor={"rgb(58, 58, 61)"}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -229,38 +230,21 @@ export function ChatWindow(props: {
             }
           }}
         />
-        <InputRightElement h="full">
-          <IconButton
-            colorScheme="blue"
-            rounded={"full"}
-            aria-label="Send"
-            icon={isLoading ? <Spinner /> : <ArrowUpIcon />}
-            type="submit"
-            onClick={(e) => {
-              e.preventDefault();
-              sendMessage();
-            }}
-          />
-        </InputRightElement>
-      </InputGroup>
+      </div>
 
-      {messages.length === 0 ? (
-        <footer className="flex justify-center absolute bottom-8">
-          <a
-            href="https://eea.europa.eu"
-            target="_blank"
-            className="text-white flex items-center"
-          >
-            <img
-              alt="EEA"
-              src="https://www.eea.europa.eu/static/media/eea-logo-white.da328514.svg"
-              className="h-4 mr-1"
-            />
-          </a>
-        </footer>
-      ) : (
-        ""
-      )}
+      {messages.length === 0 ? <Footer /> : ""}
     </div>
   );
 }
+
+// <IconButton
+//   colorScheme="blue"
+//   rounded={"full"}
+//   aria-label="Send"
+//   icon={isLoading ? <Spinner /> : <ArrowUpIcon />}
+//   type="submit"
+//   onClick={(e) => {
+//     e.preventDefault();
+//     sendMessage();
+//   }}
+// />
