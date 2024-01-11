@@ -71,6 +71,8 @@ export function ChatWindow(props: {
           }}
           trigger={
             <Button
+              variant="ghost"
+              size="sm"
               disabled={isLoading}
               type="submit"
               aria-label="Send"
