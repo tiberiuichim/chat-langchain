@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import type { Message } from "ai/react";
-
+import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { applyPatch } from "fast-json-patch";
+
 import { useMarked } from "./useMarked";
+
+import type { Message } from "ai/react";
 import type { Source } from "./types";
 
 const apiBaseUrl =

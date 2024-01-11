@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React from "react";
 import { Loader2, SendIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,10 @@ import { ChatMessageBubble } from "./ChatMessageBubble";
 import { Footer } from "./Footer";
 import { AutoResizeTextarea } from "./AutoResizeTextarea";
 
+import { useBackendChat } from "./useBackendChat";
+
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
-import { useBackendChat } from "./useBackendChat";
 
 export function ChatWindow(props: {
   placeholder?: string;
@@ -23,10 +24,6 @@ export function ChatWindow(props: {
   const { sendMessage, input, setInput, messages, isLoading } = useBackendChat({
     endpoint,
   });
-
-  const sendInitialQuestion = async (question: string) => {
-    await sendMessage(question);
-  };
 
   return (
     <div className="flex flex-col items-center p-8 rounded grow max-h-full">
@@ -46,23 +43,20 @@ export function ChatWindow(props: {
               <ChatMessageBubble
                 sources={[]}
                 key={m.id}
-                message={{ ...m }}
+                message={m}
                 aiEmoji="🦜"
                 isMostRecent={index === 0}
                 messageCompleted={!isLoading}
-              ></ChatMessageBubble>
+              />
             ))
         ) : (
-          <EmptyState
-            onChoice={sendInitialQuestion}
-            questions={presetQuestions}
-          />
+          <EmptyState onChoice={sendMessage} questions={presetQuestions} />
         )}
       </div>
       <div className="flex w-full space-x-4">
         <AutoResizeTextarea
           value={input}
-          maxRows={50}
+          maxRows={20}
           placeholder={placeholder}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
