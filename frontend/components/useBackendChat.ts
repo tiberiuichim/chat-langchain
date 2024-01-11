@@ -5,8 +5,7 @@ import { applyPatch } from "fast-json-patch";
 
 import { useMarked } from "./useMarked";
 
-import type { Message } from "ai/react";
-import type { Source } from "./types";
+import type { Message, Source } from "./types";
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
@@ -95,6 +94,7 @@ export function useBackendChat({ endpoint }: BackendChatProps) {
               ].final_output.output.map((doc: Record<string, any>) => ({
                 url: doc.metadata.source,
                 title: doc.metadata.title,
+                pageContent: doc.page_content,
               }));
             }
             if (streamedResponse.id !== undefined) {

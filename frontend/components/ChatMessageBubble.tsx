@@ -1,6 +1,7 @@
 import type { Message } from "ai/react";
 import { UserIcon } from "lucide-react";
 import type { Source } from "./types";
+import { SourceDetails } from "./Source";
 
 export function ChatMessageBubble(props: {
   message: Message;
@@ -24,23 +25,12 @@ export function ChatMessageBubble(props: {
         <span>{props.message.content}</span>
         {props.sources && props.sources.length ? (
           <>
-            <code className="mt-4 mr-auto bg-slate-600 px-2 py-1 rounded">
+            <code className="mt-4 mr-auto bg-gray-200 px-2 py-1 rounded">
               <h2>🔍 Sources:</h2>
             </code>
-            <code className="mt-1 mr-2 bg-slate-600 px-2 py-1 rounded text-xs">
+            <code className="mt-1 mr-2 px-2 py-1 rounded text-xs">
               {props.sources?.map((source, i) => (
-                <div className="mt-2" key={"source:" + i}>
-                  {i + 1}. &quot;{source.pageContent}&quot;
-                  {source.metadata?.loc?.lines !== undefined ? (
-                    <div>
-                      <br />
-                      Lines {source.metadata?.loc?.lines?.from} to{" "}
-                      {source.metadata?.loc?.lines?.to}
-                    </div>
-                  ) : (
-                    ""
-                  )}
-                </div>
+                <SourceDetails source={source} key={i} index={i} />
               ))}
             </code>
           </>

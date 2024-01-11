@@ -8,11 +8,16 @@
 //   name?: string;
 //   function_call?: { name: string };
 // };
+import type { Message } from "ai/react";
+
+export type Message = {
+  sources: Source[];
+} & Message;
 
 export type Source = {
   url: string;
   title: string;
-  pageContent: string;
+  pageContent?: string;
   metadata?: {
     loc: {
       lines: {

@@ -41,7 +41,7 @@ export function ChatWindow(props: {
             .reverse()
             .map((m, index) => (
               <ChatMessageBubble
-                sources={[]}
+                sources={m.sources}
                 key={m.id}
                 message={m}
                 aiEmoji="🦜"
@@ -81,7 +81,9 @@ export function ChatWindow(props: {
           {isLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
-            <SendIcon />
+            <>
+              <SendIcon />
+            </>
           )}
         </Button>
       </div>

@@ -5,6 +5,8 @@ import { Navbar } from "@/components/Navbar";
 
 const publicSans = Public_Sans({ subsets: ["latin"] });
 
+const title = "EEA Documents Chat Agent";
+
 export default function RootLayout({
   children,
 }: {
@@ -13,31 +15,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>LangChain + Next.js Template</title>
+        <title>{title}</title>
         <link rel="shortcut icon" href="/images/favicon.ico" />
-        <meta
-          name="description"
-          content="Starter template showing how to use LangChain in Next.js projects. See source code and deploy your own at https://github.com/langchain-ai/langchain-nextjs-template!"
-        />
-        <meta property="og:title" content="LangChain + Next.js Template" />
-        <meta
-          property="og:description"
-          content="Starter template showing how to use LangChain in Next.js projects. See source code and deploy your own at https://github.com/langchain-ai/langchain-nextjs-template!"
-        />
+        <meta name="description" content={title} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={title} />
         <meta property="og:image" content="/images/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="LangChain + Next.js Template" />
-        <meta
-          name="twitter:description"
-          content="Starter template showing how to use LangChain in Next.js projects. See source code and deploy your own at https://github.com/langchain-ai/langchain-nextjs-template!"
-        />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={title} />
         <meta name="twitter:image" content="/images/og-image.png" />
       </head>
       <body className={publicSans.className}>
-        <div className="flex flex-col p-4 md:p-12 h-[100vh]">
-          <Navbar></Navbar>
-          {children}
+        <div className="p-2 md:p-4">
+          <Navbar />
         </div>
+        <div className="flex flex-col p-4 md:p-12 h-[100vh]">{children}</div>
       </body>
     </html>
   );
