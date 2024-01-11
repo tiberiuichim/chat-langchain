@@ -19,9 +19,9 @@ function QuestionCard(props: QuestionCardProps) {
   );
 }
 
-const Row = (props: { children: React.JSX.Element[] }) => {
+const Grid = (props: { children: React.JSX.Element[] }) => {
   return (
-    <div className="mt-2 flex space-x-4 grow max-w-xl w-full">
+    <div className="grid grid-cols-2 mt-2 space-y-4 space-x-4 grow max-w-xl w-full">
       {props.children}
     </div>
   );
@@ -41,14 +41,12 @@ export function EmptyState(props: {
       <div className="text-md text-black mt-2">
         Try one of the questions bellow
       </div>
-      <Row>
+      <Grid>
         <QuestionCard question={questions[0]} onClick={handleClick} />
         <QuestionCard question={questions[1]} onClick={handleClick} />
-      </Row>
-      <Row>
         <QuestionCard question={questions[2]} onClick={handleClick} />
         <QuestionCard question={questions[3]} onClick={handleClick} />
-      </Row>
+      </Grid>
     </div>
   );
 }

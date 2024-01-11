@@ -1,7 +1,6 @@
 "use client";
 import React, { useRef, useState } from "react";
-import { Loader2 } from "lucide-react";
-import { PlayIcon } from "lucide-react";
+import { Loader2, SendIcon } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { applyPatch } from "fast-json-patch";
@@ -220,7 +219,7 @@ export function ChatWindow(props: {
           {isLoading ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
-            <PlayIcon />
+            <SendIcon />
           )}
         </Button>
       </div>
