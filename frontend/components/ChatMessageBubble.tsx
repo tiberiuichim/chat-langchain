@@ -1,30 +1,6 @@
 import type { Message } from "ai/react";
 import { UserIcon } from "lucide-react";
-
-// export type Message = {
-//   id: string;
-//   createdAt?: Date;
-//   content: string;
-//   role: "system" | "user" | "assistant" | "function";
-//   runId?: string;
-//   sources?: Source[];
-//   name?: string;
-//   function_call?: { name: string };
-// };
-
-export type Source = {
-  url: string;
-  title: string;
-  pageContent: string;
-  metadata?: {
-    loc: {
-      lines: {
-        from: number;
-        to: number;
-      };
-    };
-  };
-};
+import type { Source } from "./types";
 
 export function ChatMessageBubble(props: {
   message: Message;
