@@ -1,14 +1,19 @@
 import { Card, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 type QuestionCardProps = {
   onClick: (e: React.SyntheticEvent) => void;
   question: string;
+  className?: string;
 };
 
 function QuestionCard(props: QuestionCardProps) {
   return (
     <Card
-      className="cursor-pointer bg-slate hover:bg-slate-100"
+      className={cn(
+        "cursor-pointer bg-slate hover:bg-slate-100",
+        props.className,
+      )}
       onClick={props.onClick}
       onKeyDown={props.onClick}
     >
@@ -42,7 +47,11 @@ export function EmptyState(props: {
         Try one of the questions bellow
       </div>
       <Grid>
-        <QuestionCard question={questions[0]} onClick={handleClick} />
+        <QuestionCard
+          question={questions[0]}
+          onClick={handleClick}
+          className="ml-4 mt-4"
+        />
         <QuestionCard question={questions[1]} onClick={handleClick} />
         <QuestionCard question={questions[2]} onClick={handleClick} />
         <QuestionCard question={questions[3]} onClick={handleClick} />
