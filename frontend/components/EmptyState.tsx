@@ -43,6 +43,10 @@ export function EmptyState(props: {
   const { questions } = props;
   return (
     <div className="rounded flex flex-col items-center max-w-full md:p-8">
+      <div className="mb-10">
+        <Tasks />
+      </div>
+
       <div className="text-3xl text-black">Chat with (some) EEA documents</div>
       <div className="text-md text-black mt-2">
         Try one of the questions bellow
@@ -57,10 +61,6 @@ export function EmptyState(props: {
         <QuestionCard question={questions[2]} onClick={handleClick} />
         <QuestionCard question={questions[3]} onClick={handleClick} />
       </Grid>
-
-      <div className="mt-6">
-        <Tasks />
-      </div>
     </div>
   );
 }

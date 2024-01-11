@@ -69,18 +69,20 @@ export function ChatWindow(props: {
               setInput(input + "\n");
             }
           }}
+          trigger={
+            <Button
+              disabled={isLoading}
+              type="submit"
+              aria-label="Send"
+              onKeyDown={(e) => {
+                e.preventDefault();
+                sendMessage();
+              }}
+            >
+              <SendIcon />
+            </Button>
+          }
         />
-        <Button
-          disabled={isLoading}
-          type="submit"
-          aria-label="Send"
-          onKeyDown={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-        >
-          <SendIcon />
-        </Button>
       </div>
 
       {messages.length === 0 ? <Footer /> : ""}
