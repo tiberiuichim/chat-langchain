@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Loader2, SendIcon } from "lucide-react";
+import { SendIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
@@ -79,13 +79,7 @@ export function ChatWindow(props: {
             sendMessage();
           }}
         >
-          {isLoading ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : (
-            <>
-              <SendIcon />
-            </>
-          )}
+          <SendIcon />
         </Button>
       </div>
 

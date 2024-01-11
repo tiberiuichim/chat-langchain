@@ -58,7 +58,7 @@ export function EmptyState(props: {
         <QuestionCard question={questions[3]} onClick={handleClick} />
       </Grid>
 
-      <div className="mt-2">
+      <div className="mt-6">
         <Tasks />
       </div>
     </div>

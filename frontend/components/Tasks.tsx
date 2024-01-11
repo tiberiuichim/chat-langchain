@@ -61,7 +61,7 @@ export const Tasks = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="IconButton flex space-x-1"
+          className="IconButton flex space-x-1  hover:bg-slate-100 p-3"
           aria-label="Customise options"
         >
           <div>What do you want to do today?</div>
@@ -71,16 +71,16 @@ export const Tasks = () => {
       <DropdownMenuContent>
         {components.map((component) => (
           <DropdownMenuItem key={component.title}>
-            <div className="space-y-1">
-              <h4>
-                <Link title={component.title} href={component.href}>
-                  {component.title}
-                </Link>
-              </h4>
+            <Link
+              title={component.title}
+              href={component.href}
+              className="space-y-1"
+            >
+              <h4>{component.title}</h4>
               <div className="text-sm text-slate-500">
                 {component.description}
               </div>
-            </div>
+            </Link>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
