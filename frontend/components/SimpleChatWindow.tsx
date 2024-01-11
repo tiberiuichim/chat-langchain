@@ -1,4 +1,5 @@
 "use client";
+
 import React from "react";
 import { Loader2, SendIcon } from "lucide-react";
 
@@ -57,7 +58,7 @@ export function ChatWindow(props: {
         <AutoResizeTextarea
           value={input}
           maxRows={20}
-          placeholder={placeholder}
+          placeholder={messages.length > 0 ? "Ask follow-up..." : placeholder}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {

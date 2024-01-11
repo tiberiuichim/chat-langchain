@@ -1,3 +1,4 @@
+import { Tasks } from "@/components/Tasks";
 import { Card, CardHeader } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
@@ -56,6 +57,10 @@ export function EmptyState(props: {
         <QuestionCard question={questions[2]} onClick={handleClick} />
         <QuestionCard question={questions[3]} onClick={handleClick} />
       </Grid>
+
+      <div className="mt-2">
+        <Tasks />
+      </div>
     </div>
   );
 }

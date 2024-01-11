@@ -33,7 +33,7 @@ export const SourceDetails: React.FC<SourceProps> = ({ source, index }) => {
             <h4 className="text-sm font-semibold">
               {index + 1}. {source.title || "untitled document"}
             </h4>
-            <Button variant="ghost" size="xs" className="w-9 p-0">
+            <Button variant="ghost" size={null} className="w-9 p-0">
               <ChevronsUpDown className="h-4 w-4" />
               <span className="sr-only">Toggle</span>
             </Button>{" "}
