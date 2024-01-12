@@ -24,3 +24,4 @@ pip install pdfminer.six
 .venv/bin/pip install unstructured[local-inference]
 .venv/bin/pip install "unstructured[all-docs]"
 .venv/bin/pip install 'git+https://github.com/facebookresearch/detectron2.git'
+.venv/bin/pip install llama-index
