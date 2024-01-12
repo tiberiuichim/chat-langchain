@@ -4,7 +4,7 @@ from typing import Dict, List, Optional, Sequence
 import weaviate
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from langchain.chat_models import ChatOpenAI
+from langchain_community.chat_models import ChatOpenAI
 
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain.schema import Document
@@ -21,7 +21,7 @@ from langchain.schema.runnable import (
 )
 from langchain.vectorstores.weaviate import Weaviate
 from pydantic import BaseModel
-from langchain.embeddings import HuggingFaceInstructEmbeddings
+from langchain_community.embeddings import HuggingFaceInstructEmbeddings
 
 from constants import (
     WEAVIATE_DOCS_INDEX_NAME,
