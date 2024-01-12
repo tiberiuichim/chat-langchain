@@ -1,4 +1,4 @@
-from unstructured.cleaners.core import clean_extra_whitespace
+# from unstructured.cleaners.core import clean_extra_whitespace
 from langchain_community.document_loaders import (
     CSVLoader,
     TextLoader,
@@ -6,8 +6,8 @@ from langchain_community.document_loaders import (
     Docx2txtLoader,
     UnstructuredFileLoader,
     UnstructuredMarkdownLoader,
-    PDFMinerLoader,
-    PyPDFLoader,
+    # PDFMinerLoader,
+    # PyPDFLoader,
     PyMuPDFLoader,
 )
 
@@ -15,6 +15,10 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+
+OPENAI_API_BASE = os.environ.get("OPENAI_API_BASE", "http://localhost:5000/v1")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "___")
+OPENAI_LLM_MODEL = os.environ.get("OPENAI_LLM_MODEL", "")
 
 EMBEDDING_MODEL_NAME = os.environ["EMBEDDING_MODEL_NAME"]
 WEAVIATE_DOCS_INDEX_NAME = os.environ["WEAVIATE_DOCS_INDEX_NAME"]

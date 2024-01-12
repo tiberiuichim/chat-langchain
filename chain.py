@@ -24,6 +24,9 @@ from pydantic import BaseModel
 from langchain_community.embeddings import HuggingFaceInstructEmbeddings
 
 from constants import (
+    OPENAI_API_KEY,
+    OPENAI_API_BASE,
+    OPENAI_LLM_MODEL,
     WEAVIATE_DOCS_INDEX_NAME,
     EMBEDDING_MODEL_NAME,
     WEAVIATE_URL,
@@ -32,10 +35,6 @@ from constants import (
     REPHRASE_TEMPLATE,
     RETRIEVER_K,
 )
-
-# import os
-# from langchain.embeddings.openai import OpenAIEmbeddings
-# from langchain.embeddings.voyageai import VoyageEmbeddings
 
 app = FastAPI()
 app.add_middleware(
@@ -93,6 +92,7 @@ def create_retriever_chain(
         run_name="CondenseQuestion",
     )
     conversation_chain = condense_question_chain | retriever
+
     return RunnableBranch(
         (
             RunnableLambda(lambda x: bool(x.get("chat_history"))).with_config(
@@ -134,17 +134,6 @@ def create_chain(
     llm: BaseLanguageModel,
     retriever: BaseRetriever,
 ) -> Runnable:
-    retriever_chain = create_retriever_chain(
-        llm,
-        retriever,
-    ).with_config(run_name="FindDocs")
-    _context = RunnableMap(
-        {
-            "context": retriever_chain | format_docs,
-            "question": itemgetter("question"),
-            "chat_history": itemgetter("chat_history"),
-        }
-    ).with_config(run_name="RetrieveDocs")
     prompt = ChatPromptTemplate.from_messages(
         [
             ("system", RESPONSE_TEMPLATE),
@@ -153,10 +142,24 @@ def create_chain(
         ]
     )
 
-    response_synthesizer = (prompt | llm | StrOutputParser()).with_config(
+    retriever_chain = create_retriever_chain(
+        llm,
+        retriever,
+    ).with_config(run_name="FindDocs")
+
+    llm_response_synthesizer = (prompt | llm | StrOutputParser()).with_config(
         run_name="GenerateResponse",
     )
-    return (
+
+    insert_context = RunnableMap(
+        {
+            "context": retriever_chain | format_docs,
+            "question": itemgetter("question"),
+            "chat_history": itemgetter("chat_history"),
+        }
+    ).with_config(run_name="RetrieveDocs")
+
+    chain = (
         {
             "question": RunnableLambda(itemgetter("question")).with_config(
                 run_name="Itemgetter:question"
@@ -165,18 +168,20 @@ def create_chain(
                 run_name="SerializeHistory"
             ),
         }
-        | _context
-        | response_synthesizer
+        | insert_context
+        | llm_response_synthesizer
     )
+
+    return chain
 
 
 llm = ChatOpenAI(
-    # model="gpt-3.5-turbo-16k",
-    # model="TheBloke/Llama-2-7B-AWQ",
-    # model="llama-2-7b.Q5_K_S.gguf",
+    model=OPENAI_LLM_MODEL,
     streaming=True,
     temperature=0,
-    openai_api_base="http://localhost:5000/v1",
+    openai_api_base=OPENAI_API_BASE,
+    openai_api_key=OPENAI_API_KEY,
+    max_tokens=512,
 )
 retriever = get_retriever()
 answer_chain = create_chain(
