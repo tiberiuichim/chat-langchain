@@ -53,10 +53,6 @@ class ChatRequest(BaseModel):
 
 
 def get_embeddings_model() -> Embeddings:
-    # if os.environ.get("VOYAGE_API_KEY") and os.environ.get("VOYAGE_AI_MODEL"):
-    #     return VoyageEmbeddings(model=os.environ["VOYAGE_AI_MODEL"])
-    # return OpenAIEmbeddings(chunk_size=200)
-
     embeddings = HuggingFaceInstructEmbeddings(
         model_name=EMBEDDING_MODEL_NAME,
         model_kwargs={"device": "cuda"},
@@ -77,9 +73,7 @@ def get_retriever() -> BaseRetriever:
         by_text=False,
         attributes=["source", "title"],
     )
-    return weaviate_client.as_retriever(
-        search_kwargs=dict(k=RETRIEVER_K)
-    )  # default k=6
+    return weaviate_client.as_retriever(search_kwargs=dict(k=RETRIEVER_K))
 
 
 def create_retriever_chain(
@@ -121,12 +115,14 @@ def format_docs(docs: Sequence[Document]) -> str:
 def serialize_history(request: ChatRequest):
     chat_history = request["chat_history"] or []
     converted_chat_history = []
+
     for message in chat_history:
         if message.get("human") is not None:
             converted_chat_history.append(
                 HumanMessage(content=message["human"]))
         if message.get("ai") is not None:
             converted_chat_history.append(AIMessage(content=message["ai"]))
+
     return converted_chat_history
 
 
