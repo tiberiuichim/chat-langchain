@@ -1,11 +1,12 @@
+from unstructured.cleaners.core import clean_extra_whitespace
 from langchain.document_loaders import (
     CSVLoader,
-    PDFMinerLoader,
     TextLoader,
     UnstructuredExcelLoader,
     Docx2txtLoader,
     UnstructuredFileLoader,
     UnstructuredMarkdownLoader,
+    PDFMinerLoader,
 )
 
 import os
@@ -31,23 +32,27 @@ with open(os.environ["REPHRASE_TEMPLATE"]) as f:
     REPHRASE_TEMPLATE = f.read()
 
 # Can be changed to a specific number
-INGEST_THREADS = os.environ.get("INGEST_THREADS") or os.cpu_count() or 8
+INGEST_THREADS = int(os.environ.get("INGEST_THREADS") or os.cpu_count() or 8)
 
 # https://python.langchain.com/en/latest/_modules/langchain/document_loaders/excel.html#UnstructuredExcelLoader
 DOCUMENT_MAP = {
-    ".txt": TextLoader,
-    ".md": UnstructuredMarkdownLoader,
-    ".py": TextLoader,
-    # ".pdf": PDFMinerLoader,
-    ".pdf": UnstructuredFileLoader,
-    ".csv": CSVLoader,
-    ".xls": UnstructuredExcelLoader,
-    ".xlsx": UnstructuredExcelLoader,
-    ".docx": Docx2txtLoader,
-    ".doc": Docx2txtLoader,
+    ".txt": (TextLoader, [], {}),
+    ".md": (UnstructuredMarkdownLoader, [], {}),
+    ".py": (TextLoader, [], {}),
+    ".pdf": (PDFMinerLoader, [], {}),
+    # ".pdf": (
+    #     UnstructuredFileLoader,
+    #     [],
+    #     {"mode": "elements", "post_processors": [clean_extra_whitespace]},
+    # ),
+    ".csv": (CSVLoader, [], {}),
+    ".xls": (UnstructuredExcelLoader, [], {}),
+    ".xlsx": (UnstructuredExcelLoader, [], {}),
+    ".docx": (Docx2txtLoader, [], {}),
+    ".doc": (Docx2txtLoader, [], {}),
     # code loaders
-    ".js": UnstructuredFileLoader,
-    ".jsx": UnstructuredFileLoader,
-    ".ts": UnstructuredFileLoader,
-    ".tsx": UnstructuredFileLoader,
+    ".js": (UnstructuredFileLoader, [], {}),
+    ".jsx": (UnstructuredFileLoader, [], {}),
+    ".ts": (UnstructuredFileLoader, [], {}),
+    ".tsx": (UnstructuredFileLoader, [], {}),
 }

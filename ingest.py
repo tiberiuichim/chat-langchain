@@ -1,16 +1,13 @@
 """Load html from files, clean up, split, ingest into Weaviate."""
 
-from utils import load_documents  # , split_documents
 import logging
 import os
-
 import weaviate
-
 from langchain.indexes import SQLRecordManager
-
 from langchain.vectorstores.weaviate import Weaviate
 
 from _index import index
+from utils import load_documents, split_documents
 from chain import get_embeddings_model
 from constants import (
     WEAVIATE_DOCS_INDEX_NAME,
@@ -19,7 +16,6 @@ from constants import (
     RECORD_MANAGER_DB_URL,
     DOCUMENTS_DIR,
 )
-from utils import split_documents
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

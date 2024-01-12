@@ -1,5 +1,3 @@
-from bs4 import BeautifulSoup  # , SoupStrainer
-import re
 from langchain.text_splitter import (
     CharacterTextSplitter,
     Language,
@@ -20,11 +18,6 @@ from constants import (
 )
 
 
-# from parser import langchain_docs_extractor
-# from langchain.document_loaders import RecursiveUrlLoader, SitemapLoader
-# from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
-
-
 def file_log(logentry):
     file1 = open("file_ingest.log", "a")
     file1.write(logentry + "\n")
@@ -36,10 +29,10 @@ def load_single_document(file_path: str) -> Document | None:
     # Loads a single document from a file path
     try:
         file_extension = os.path.splitext(file_path)[1]
-        loader_class = DOCUMENT_MAP.get(file_extension)
-        if loader_class:
+        if file_extension in DOCUMENT_MAP:
+            (loader_class, args, kwargs) = DOCUMENT_MAP[file_extension]
             file_log(file_path + " loaded.")
-            loader = loader_class(file_path)
+            loader = loader_class(file_path, *args, **kwargs)
         else:
             file_log(file_path + " document type is undefined.")
             raise ValueError("Document type is undefined")
@@ -143,6 +136,7 @@ extension_handlers = {
     ".tsx": ts_splitter,
     ".js": js_splitter,
     ".jsx": js_splitter,
+    "tokenized": None,
 }
 
 
@@ -156,6 +150,7 @@ def split_documents(documents: list[Document], tokenizer=None) -> list[Document]
         )
         extension_handlers["tokenized"] = huggingface_token_splitter
 
+    # __import__("pdb").set_trace()
     for doc in documents:
         if doc is not None:
             file_extension = os.path.splitext(doc.metadata["source"])[1]
@@ -175,22 +170,29 @@ def split_documents(documents: list[Document], tokenizer=None) -> list[Document]
     return texts
 
 
-def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
-    title = soup.find("title")
-    description = soup.find("meta", attrs={"name": "description"})
-    html = soup.find("html")
-    return {
-        "source": meta["loc"],
-        "title": title.get_text() if title else "",
-        "description": description.get("content", "") if description else "",
-        "language": html.get("lang", "") if html else "",
-        **meta,
-    }
+# import re
+# from bs4 import BeautifulSoup  # , SoupStrainer
+# from parser import langchain_docs_extractor
+# from langchain.document_loaders import RecursiveUrlLoader, SitemapLoader
+# from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
 
 
-def simple_extractor(html: str) -> str:
-    soup = BeautifulSoup(html, "lxml")
-    return re.sub(r"\n\n+", "\n\n", soup.text).strip()
+# def simple_extractor(html: str) -> str:
+#     soup = BeautifulSoup(html, "lxml")
+#     return re.sub(r"\n\n+", "\n\n", soup.text).strip()
+
+
+# def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
+#     title = soup.find("title")
+#     description = soup.find("meta", attrs={"name": "description"})
+#     html = soup.find("html")
+#     return {
+#         "source": meta["loc"],
+#         "title": title.get_text() if title else "",
+#         "description": description.get("content", "") if description else "",
+#         "language": html.get("lang", "") if html else "",
+#         **meta,
+#     }
 
 
 # def load_langchain_docs():
