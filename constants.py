@@ -1,5 +1,5 @@
-from unstructured.cleaners.core import clean_extra_whitespace
-from langchain.document_loaders import (
+# from unstructured.cleaners.core import clean_extra_whitespace
+from langchain_community.document_loaders import (
     CSVLoader,
     TextLoader,
     UnstructuredExcelLoader,

@@ -25,3 +25,7 @@ pip install pdfminer.six
 .venv/bin/pip install "unstructured[all-docs]"
 .venv/bin/pip install 'git+https://github.com/facebookresearch/detectron2.git'
 .venv/bin/pip install llama-index
+.venv/bin/pip install langchain_experimental
+.venv/bin/pip install -U langchain
+.venv/bin/pip install -U langchain-community
+.venv/bin/pip install simsimd

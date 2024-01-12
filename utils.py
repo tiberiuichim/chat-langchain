@@ -9,6 +9,7 @@ from langchain.docstore.document import Document
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import os
 import logging
+from pdfsplitter import get_pdf_splitter
 
 from constants import (
     DOCUMENT_MAP,
@@ -136,6 +137,7 @@ extension_handlers = {
     ".tsx": ts_splitter,
     ".js": js_splitter,
     ".jsx": js_splitter,
+    ".pdf": get_pdf_splitter(),
     "tokenized": None,
 }
 

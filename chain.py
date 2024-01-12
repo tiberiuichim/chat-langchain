@@ -20,7 +20,6 @@ from langchain.schema.runnable import (
     RunnableMap,
 )
 from langchain.vectorstores.weaviate import Weaviate
-from langsmith import Client
 from pydantic import BaseModel
 from langchain.embeddings import HuggingFaceInstructEmbeddings
 
@@ -37,8 +36,6 @@ from constants import (
 # import os
 # from langchain.embeddings.openai import OpenAIEmbeddings
 # from langchain.embeddings.voyageai import VoyageEmbeddings
-
-client = Client()
 
 app = FastAPI()
 app.add_middleware(
