@@ -13,7 +13,7 @@ export function Navbar() {
           src="https://www.eea.europa.eu/en/newsroom/branding-materials/eea_logo_compact_en-1.svg/@@images/image-1-ec9ee8fd8059f5a2418196bfdee570e2.svg"
         />
       </button>
-      <small>Beta</small>
+      <small>EEA chat lab - Beta</small>
     </div>
   );
 }
