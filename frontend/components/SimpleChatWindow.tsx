@@ -13,7 +13,6 @@ import { useBackendChat } from "./useBackendChat";
 
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
-import { text } from "stream/consumers";
 
 export function ChatWindow(props: {
   placeholder?: string;
@@ -26,7 +25,7 @@ export function ChatWindow(props: {
   const { sendMessage, input, setInput, messages, isLoading } = useBackendChat({
     endpoint,
   });
-  const textareaRef = useRef<HTMLTextAreaElement>();
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     if (textareaRef.current) textareaRef.current.focus();
