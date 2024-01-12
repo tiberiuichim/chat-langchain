@@ -179,6 +179,7 @@ def split_documents(documents: list[Document], tokenizer=None) -> list[Document]
 
             texts.extend(chunks or [])
 
+    __import__("pdb").set_trace()
     return texts
 
 
