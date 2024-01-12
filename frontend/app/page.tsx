@@ -1,6 +1,6 @@
 import { ChatWindow } from "@/components/SimpleChatWindow";
 
-export default function AgentsPage() {
+export default function DefaultPage() {
   return (
     <>
       <ChatWindow

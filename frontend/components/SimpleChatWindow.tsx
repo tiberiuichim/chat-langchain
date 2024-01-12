@@ -14,13 +14,22 @@ import { useBackendChat } from "./useBackendChat";
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
 
+// {messages.length > 0 && (
+//   <div className="flex flex-col items-center py-8">
+//     <div className="text-2xl font-medium text-slate-800">{titleText}</div>
+//     <div className="text-xl font-medium text-slate-800">
+//       Note: chat results may not be acurate
+//     </div>
+//   </div>
+// )}
+
 export function ChatWindow(props: {
   placeholder?: string;
   titleText?: string;
   presetQuestions: string[];
   endpoint: string;
 }) {
-  const { placeholder, titleText, presetQuestions, endpoint } = props;
+  const { placeholder, presetQuestions, endpoint } = props;
 
   const { sendMessage, input, setInput, messages, isLoading } = useBackendChat({
     endpoint,
@@ -32,15 +41,7 @@ export function ChatWindow(props: {
   }, []);
 
   return (
-    <div className="flex flex-col items-center p-8 rounded grow max-h-full">
-      {messages.length > 0 && (
-        <div className="flex flex-col items-center py-8">
-          <div className="text-2xl font-medium text-white">{titleText}</div>
-          <div className="text-xl font-medium text-white">
-            Note: chat results may not be acurate
-          </div>
-        </div>
-      )}
+    <div className="flex flex-col items-center grow max-h-full">
       <div className="flex flex-col-reverse w-full mb-2 overflow-auto">
         {messages.length > 0 ? (
           [...messages]
