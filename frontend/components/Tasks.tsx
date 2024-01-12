@@ -10,6 +10,7 @@ import {
   // DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PanelTopClose } from "lucide-react";
 
@@ -60,13 +61,20 @@ export const Tasks = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          className="IconButton flex space-x-1  hover:bg-slate-100 p-3"
-          aria-label="Customise options"
+        <Button
+          variant="ghost"
+          size="sm"
+          type="submit"
+          aria-label="Send"
+          onKeyDown={(e) => {
+            e.preventDefault();
+            sendMessage();
+          }}
+          className="rounded-md border flex space-x-2"
         >
           <div>What do you want to do today?</div>
-          <PanelTopClose />
-        </button>
+          <PanelTopClose className="text-slate-600" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         {components.map((component) => (
