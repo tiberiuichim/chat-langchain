@@ -144,3 +144,4 @@ pyvenv.cfg
 node_modules/
 .envrc
 /data/
+start_dev.sh
