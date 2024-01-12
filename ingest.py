@@ -36,6 +36,11 @@ def ingest_docs():
         if "title" not in doc.metadata:
             doc.metadata["title"] = doc.metadata["source"]
 
+        title = doc.metadata["title"]
+        page = doc.metadata["page"]
+        total_pages = doc.metadata["total_pages"]
+        doc.metadata["title"] = f"{title} - page {page}/{total_pages}"
+
     client = weaviate.Client(
         url=WEAVIATE_URL,
         auth_client_secret=weaviate.AuthApiKey(api_key=WEAVIATE_API_KEY),
