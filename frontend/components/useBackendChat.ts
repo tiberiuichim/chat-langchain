@@ -90,6 +90,7 @@ export function useBackendChat({ endpoint }: BackendChatProps) {
               streamedResponse,
               chunk.ops,
             ).newDocument;
+
             if (
               Array.isArray(
                 streamedResponse?.logs?.[sourceStepName]?.final_output?.output,

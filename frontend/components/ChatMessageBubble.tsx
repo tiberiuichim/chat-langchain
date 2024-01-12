@@ -31,7 +31,7 @@ export function ChatMessageBubble(props: ChatMessageBubbleProps) {
     >
       <div className="mr-2">{prefix}</div>
       <div className="whitespace-pre-wrap flex flex-col">
-        <span>{message.content}</span>
+        <span dangerouslySetInnerHTML={{ __html: message.content }}></span>
         {sources && sources.length ? (
           <>
             <code className="mt-4 mr-auto bg-gray-200 px-2 py-1 rounded">
