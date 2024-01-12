@@ -29,3 +29,4 @@ pip install pdfminer.six
 .venv/bin/pip install -U langchain
 .venv/bin/pip install -U langchain-community
 .venv/bin/pip install simsimd
+.venv/bin/pip install pymupdf

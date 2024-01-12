@@ -26,7 +26,7 @@ def file_log(logentry):
     print(logentry + "\n")
 
 
-def load_single_document(file_path: str) -> Document | None:
+def load_single_document(file_path: str) -> list[Document] | None:
     # Loads a single document from a file path
     try:
         file_extension = os.path.splitext(file_path)[1]
@@ -37,7 +37,7 @@ def load_single_document(file_path: str) -> Document | None:
         else:
             file_log(file_path + " document type is undefined.")
             raise ValueError("Document type is undefined")
-        return loader.load()[0]
+        return loader.load()
     except Exception as ex:
         file_log("%s loading error: \n%s" % (file_path, ex))
         return None
@@ -55,7 +55,9 @@ def load_document_batch(filepaths):
             file_log("Some files failed to submit")
             return None
         else:
-            data_list = [future.result() for future in futures]
+            data_list = []
+            for future in futures:
+                data_list.extend(future.result() or [])
             # return data and file paths
             return (data_list, filepaths)
 
@@ -137,7 +139,7 @@ extension_handlers = {
     ".tsx": ts_splitter,
     ".js": js_splitter,
     ".jsx": js_splitter,
-    ".pdf": get_pdf_splitter(),
+    # ".pdf": get_pdf_splitter(),
     "tokenized": None,
 }
 
@@ -167,7 +169,15 @@ def split_documents(documents: list[Document], tokenizer=None) -> list[Document]
     texts = []
     for ext, ext_docs in docs.items():
         splitter = extension_handlers[ext]
-        texts.extend(splitter.split_documents(ext_docs))
+        for doc in ext_docs:
+            chunks = []
+            try:
+                chunks = splitter.split_documents([doc])
+            except:
+                print("Cannot split", doc)
+                __import__("pdb").set_trace()
+
+            texts.extend(chunks or [])
 
     return texts
 

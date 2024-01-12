@@ -1,4 +1,4 @@
-# from unstructured.cleaners.core import clean_extra_whitespace
+from unstructured.cleaners.core import clean_extra_whitespace
 from langchain_community.document_loaders import (
     CSVLoader,
     TextLoader,
@@ -7,6 +7,8 @@ from langchain_community.document_loaders import (
     UnstructuredFileLoader,
     UnstructuredMarkdownLoader,
     PDFMinerLoader,
+    PyPDFLoader,
+    PyMuPDFLoader,
 )
 
 import os
@@ -39,11 +41,12 @@ DOCUMENT_MAP = {
     ".txt": (TextLoader, [], {}),
     ".md": (UnstructuredMarkdownLoader, [], {}),
     ".py": (TextLoader, [], {}),
-    ".pdf": (PDFMinerLoader, [], {}),
+    ".pdf": (PyMuPDFLoader, [], {}),
+    # ".pdf": (PDFMinerLoader, [], {}),
     # ".pdf": (
     #     UnstructuredFileLoader,
     #     [],
-    #     {"mode": "elements", "post_processors": [clean_extra_whitespace]},
+    #     {"post_processors": [clean_extra_whitespace]},  # "mode": "elements",
     # ),
     ".csv": (CSVLoader, [], {}),
     ".xls": (UnstructuredExcelLoader, [], {}),
