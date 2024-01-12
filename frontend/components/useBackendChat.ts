@@ -5,7 +5,13 @@ import { applyPatch } from "fast-json-patch";
 
 import { useMarked } from "./useMarked";
 
-import type { Message, Source } from "./types";
+import type { Source } from "./types";
+import type { Message } from "ai";
+
+interface ExtendedMessage extends Message {
+  runId?: string;
+  sources?: Source[];
+}
 
 const apiBaseUrl =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
@@ -15,7 +21,7 @@ type BackendChatProps = {
 };
 
 export function useBackendChat({ endpoint }: BackendChatProps) {
-  const [messages, setMessages] = useState<Array<Message>>([]);
+  const [messages, setMessages] = useState<Array<ExtendedMessage>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState("");
 
@@ -41,7 +47,7 @@ export function useBackendChat({ endpoint }: BackendChatProps) {
 
     let accumulatedMessage = "";
     let runId: string | undefined = undefined;
-    let sources: Source[] | undefined = undefined;
+    let sources: Source[] = [];
     let messageIndex: number | null = null;
 
     try {
