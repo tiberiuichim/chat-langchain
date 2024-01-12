@@ -6,7 +6,7 @@ export default function DefaultPage() {
       <ChatWindow
         endpoint="/chat/stream_log"
         titleText="Ask me anything about (some) EEA documents!"
-        placeholder="What is the trend for emissions in the building sector?"
+        placeholder="Ask a question. Enter multiple lines with Shift+Enter"
         presetQuestions={[
           "How many heat pumps were sold?",
           "What is the LULUCF sector?",

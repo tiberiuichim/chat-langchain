@@ -53,7 +53,7 @@ export function ChatWindow(props: {
                 message={m}
                 aiEmoji="🦜"
                 isMostRecent={index === 0}
-                messageCompleted={!isLoading}
+                isLoading={isLoading}
               />
             ))
         ) : (

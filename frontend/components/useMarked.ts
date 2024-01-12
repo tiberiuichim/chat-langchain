@@ -4,7 +4,7 @@ import { Renderer } from "marked";
 import hljs from "highlight.js";
 
 export function useMarked() {
-  let renderer = new Renderer();
+  const renderer = new Renderer();
   renderer.paragraph = (text) => {
     return text + "\n";
   };

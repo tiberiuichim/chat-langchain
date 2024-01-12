@@ -8,28 +8,30 @@ type ChatMessageBubbleProps = {
   aiEmoji?: string;
   sources: Source[];
   isMostRecent: boolean;
-  messageCompleted: boolean;
+  isLoading: boolean;
 };
 
 export function ChatMessageBubble(props: ChatMessageBubbleProps) {
-  const { message, messageCompleted, sources } = props;
+  const { message, isLoading, isMostRecent, sources } = props;
+  const showLoader = isMostRecent && isLoading;
   const colorClassName =
     message.role === "user" ? "bg-lime-300" : "bg-slate-50 text-black";
   const alignmentClassName = message.role === "user" ? "ml-auto" : "mr-auto";
 
-  const prefix =
+  const icon =
     message.role === "user" ? (
       <UserIcon />
-    ) : messageCompleted ? (
-      <BrainCircuitIcon />
-    ) : (
+    ) : showLoader ? (
       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+    ) : (
+      <BrainCircuitIcon />
     );
+
   return (
     <div
       className={`${alignmentClassName} ${colorClassName} rounded px-4 py-2 max-w-[80%] mb-8 flex`}
     >
-      <div className="mr-2">{prefix}</div>
+      <div className="mr-2">{icon}</div>
       <div className="whitespace-pre-wrap flex flex-col">
         <span dangerouslySetInnerHTML={{ __html: message.content }}></span>
         {sources && sources.length ? (
