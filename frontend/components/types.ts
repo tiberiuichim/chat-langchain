@@ -8,11 +8,11 @@
 //   name?: string;
 //   function_call?: { name: string };
 // };
-import type { Message } from "ai/react";
+import type { Message as AIMessage } from "ai/react";
 
 export type Message = {
   sources: Source[];
-} & Message;
+} & AIMessage;
 
 export type Source = {
   url: string;

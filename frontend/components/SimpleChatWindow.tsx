@@ -48,7 +48,7 @@ export function ChatWindow(props: {
             .reverse()
             .map((m, index) => (
               <ChatMessageBubble
-                sources={m.sources}
+                sources={m.sources || []}
                 key={m.id}
                 message={m}
                 aiEmoji="🦜"
