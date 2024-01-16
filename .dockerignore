@@ -10,3 +10,5 @@ frontend/
 Makefile
 docker-compose.yml
 .env
+build.env
+cache

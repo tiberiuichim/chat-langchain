@@ -2,6 +2,7 @@
 version: '3.4'
 services:
   frontend:
+    restart: no
     image: tiberiuichim/llm-chat-frontend:0.1
     build: ./frontend
     ports:
@@ -11,17 +12,22 @@ services:
     # env_file:
     #   - ./.env.example
     #   - ./.env
+
   chat:
+    restart: no
     image: tiberiuichim/llm-chat-backend:0.1
     build: .
     ports:
       - 8060:8060
     environment:
       CONTAINER_PORT: 8060
-    command: /home/app/.local/bin/uvicorn main:app --port=8060
+    command: /home/app/.local/bin/uvicorn main:app --host 0.0.0.0 --port=8060
     env_file:
       - ./.env.example
       - ./.env
+    volumes:
+      - ./cache:/home/app/.cache
+
   weaviate:
     restart: no
     # restart: on-failure:0
@@ -45,5 +51,6 @@ services:
       DEFAULT_VECTORIZER_MODULE: 'none'
       ENABLE_MODULES: 'text2vec-cohere,text2vec-huggingface,text2vec-palm,text2vec-openai,generative-openai,generative-cohere,generative-palm,ref2vec-centroid,reranker-cohere,qna-openai'
       CLUSTER_HOSTNAME: 'node1'
+
 # volumes:
 #   weaviate_data:
