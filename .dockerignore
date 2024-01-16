@@ -1,2 +1,9 @@
 chat-langchain/
 assets/
+data/
+__pycache__
+.git
+.github
+.venv
+frontend/
+*.log

@@ -11,3 +11,7 @@ ingest:
 format:
 	black .
 	isort .
+
+.PHONY: build
+build:
+	docker build . -t tiberiuichim/llm-chat:0.1
