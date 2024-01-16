@@ -1,6 +1,16 @@
 ---
 version: '3.4'
 services:
+  frontend:
+    image: tiberiuichim/llm-chat-frontend:0.1
+    build: ./frontend
+    ports:
+      - 4000:3000
+    # environment:
+    # command: /home/app/.local/bin/uvicorn main:app --port=8060
+    # env_file:
+    #   - ./.env.example
+    #   - ./.env
   chat:
     image: tiberiuichim/llm-chat-backend:0.1
     build: .
