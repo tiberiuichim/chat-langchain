@@ -1,6 +1,17 @@
 ---
 version: '3.4'
 services:
+  chat:
+    image: tiberiuichim/llm-chat-backend:0.1
+    build: .
+    ports:
+      - 8060:8060
+    environment:
+      CONTAINER_PORT: 8060
+    command: /home/app/.local/bin/uvicorn main:app --port=8060
+    env_file:
+      - ./.env.example
+      - ./.env
   weaviate:
     restart: no
     # restart: on-failure:0

@@ -7,3 +7,6 @@ __pycache__
 .venv
 frontend/
 *.log
+Makefile
+docker-compose.yml
+.env
