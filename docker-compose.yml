@@ -1,13 +1,25 @@
 ---
 version: '3.4'
 services:
+  shell:
+    image: ubuntu
+    volumes:
+      - cache:/home/app/.cache
+      - ./data:/home/app/data
+    user: root
+    entrypoint: sh -c "tail -f /dev/null"
   frontend:
     restart: no
     image: tiberiuichim/llm-chat-frontend:0.1
     build: ./frontend
     ports:
-      - 4000:3000
-    # environment:
+      - 3000:3000
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://test-gpu.pdmz.eea:8060
+    command: sh -c 'cd /app; find .next | grep ".js" | xargs sed -i "s#http://localhost:8080#http://test-gpu-pdmz.eea:8060#g"; node server.js'
+    #entrypoint: /app/entrypoint.sh
+    #volumes:
+      #- ./frontend/entrypoint.sh:/app/entrypoint.sh
     # command: /home/app/.local/bin/uvicorn main:app --port=8060
     # env_file:
     #   - ./.env.example
@@ -24,10 +36,12 @@ services:
       NVIDIA_VISIBLE_DEVICES: all
       NVIDIA_DRIVER_CAPABILITIES: all
     command: /home/app/.local/bin/uvicorn main:app --host 0.0.0.0 --port=8060
+    # entrypoint: sh -c "tail -f /dev/null"
     env_file:
       - ./.env.example
       - ./.env
     volumes:
+      - ./data:/home/app/chat/data
       - cache:/home/app/.cache
     deploy:
       resources:
@@ -62,4 +76,4 @@ services:
       CLUSTER_HOSTNAME: 'node1'
 
 volumes:
-  cache:
+  cache: {}
