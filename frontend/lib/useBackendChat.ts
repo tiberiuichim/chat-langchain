@@ -5,7 +5,7 @@ import { applyPatch } from "fast-json-patch";
 
 import { useMarked } from "./useMarked";
 
-import type { Source } from "./types";
+import type { Source } from "../components/types";
 import type { Message } from "ai";
 
 interface ExtendedMessage extends Message {
@@ -14,7 +14,7 @@ interface ExtendedMessage extends Message {
 }
 
 const apiBaseUrl =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080";
+  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api/";
 
 type BackendChatProps = {
   endpoint: string;

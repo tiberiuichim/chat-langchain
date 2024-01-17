@@ -146,3 +146,4 @@ node_modules/
 /data/
 start_dev.sh
 cache/
+!frontend/lib

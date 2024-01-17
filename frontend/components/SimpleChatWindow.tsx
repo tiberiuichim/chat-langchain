@@ -9,7 +9,7 @@ import { ChatMessageBubble } from "./ChatMessageBubble";
 import { Footer } from "./Footer";
 import { AutoResizeTextarea } from "./AutoResizeTextarea";
 
-import { useBackendChat } from "./useBackendChat";
+import { useBackendChat } from "../lib/useBackendChat";
 
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
