@@ -1,0 +1,36 @@
+import hpmproxy from "next-http-proxy-middleware";
+import type { NextApiRequest, NextApiResponse } from "next";
+
+function restream(proxyReq, req) {
+  console.log("restream");
+  if (!isEmpty(req.body)) {
+    const bodyData = JSON.stringify(req.body);
+    proxyReq.setHeader("Content-Type", "application/json");
+    proxyReq.setHeader("Content-Length", Buffer.byteLength(bodyData));
+    proxyReq.write(bodyData);
+  }
+}
+
+const apiUrl = process.env.LLM_API_URL || "http://localhost:8080";
+console.log(`target: (${apiUrl})`);
+
+// const proxy =
+export function POST(req: NextApiRequest, res: NextApiResponse) {
+  // const onError = (err) => {
+  //   console.error(err);
+  // };
+  //
+  return hpmproxy(req, res, {
+    target: apiUrl,
+    changeOrigin: true, // if you are changing the host
+    pathRewrite: [
+      {
+        patternStr: "^/api/llm",
+        replaceStr: "", // remove the /api/llm prefix
+      },
+    ],
+    onProxyReq: restream,
+  });
+
+  // return proxy(req, res, onError);
+}
