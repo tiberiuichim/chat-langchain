@@ -1,5 +1,5 @@
 import type { Message } from "ai/react";
-import { Loader2, UserIcon, BrainCircuitIcon } from "lucide-react";
+import { Loader2, UserIcon, BotIcon } from "lucide-react";
 import type { Source } from "./types";
 import { SourceDetails } from "./Source";
 
@@ -24,7 +24,7 @@ export function ChatMessageBubble(props: ChatMessageBubbleProps) {
     ) : showLoader ? (
       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
     ) : (
-      <BrainCircuitIcon />
+      <BotIcon />
     );
 
   return (
