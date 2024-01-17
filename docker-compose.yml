@@ -8,9 +8,10 @@ services:
       - ./data:/home/app/data
     user: root
     entrypoint: sh -c "tail -f /dev/null"
+
   frontend:
     restart: no
-    image: tiberiuichim/llm-chat-frontend:0.1
+    image: tiberiuichim/llm-chat-frontend:0.2
     build: ./frontend
     ports:
       - 3000:3000
@@ -74,6 +75,56 @@ services:
       DEFAULT_VECTORIZER_MODULE: 'none'
       ENABLE_MODULES: 'text2vec-cohere,text2vec-huggingface,text2vec-palm,text2vec-openai,generative-openai,generative-cohere,generative-palm,ref2vec-centroid,reranker-cohere,qna-openai'
       CLUSTER_HOSTNAME: 'node1'
+
+  apache:
+    image: eeacms/apache:2.4-2.9
+    environment:
+      APACHE_CONFIG: |-
+        <VirtualHost *:80>
+          ServerAdmin helpdesk@climate-adapt.eea.europa.eu
+          ServerName test-gpu.pdmz.eea
+          ServerAlias cca-local
+
+          ErrorLog /var/log/apache.log
+        # GZIP compression for text files: HTML, CSS, JS, Text, XML, fonts
+        <IfModule mod_deflate.c>
+
+          AddOutputFilterByType DEFLATE text/css
+          AddOutputFilterByType DEFLATE text/html
+          AddOutputFilterByType DEFLATE text/javascript
+          AddOutputFilterByType DEFLATE text/plain
+          AddOutputFilterByType DEFLATE text/xml
+          AddOutputFilterByType DEFLATE text/tab-separated-values
+          AddOutputFilterByType DEFLATE application/javascript
+          AddOutputFilterByType DEFLATE application/x-javascript
+          AddOutputFilterByType DEFLATE application/octet-stream
+          AddOutputFilterByType DEFLATE application/x-font
+          AddOutputFilterByType DEFLATE application/json
+          AddOutputFilterByType DEFLATE application/x-font-opentype
+          AddOutputFilterByType DEFLATE application/x-font-otf
+          AddOutputFilterByType DEFLATE application/x-font-truetype
+          AddOutputFilterByType DEFLATE application/x-font-ttf
+          AddOutputFilterByType DEFLATE application/xhtml+xml
+          AddOutputFilterByType DEFLATE application/xml
+          AddOutputFilterByType DEFLATE font/opentype
+          AddOutputFilterByType DEFLATE font/otf
+          AddOutputFilterByType DEFLATE font/ttf
+          AddOutputFilterByType DEFLATE image/svg+xml
+          AddOutputFilterByType DEFLATE image/x-icon
+        </IfModule>
+
+          RewriteEngine On
+          ProxyPreserveHost On
+
+          RewriteRule ^/api/llm(.*) http://chat:8080/$$1 [P,L]
+          RewriteRule ^/(.*) http://frontend:3000/$$1 [P,L]
+        </VirtualHost>
+      TZ: Europe/Copenhagen
+    stdin_open: true
+    tty: true
+    ports:
+    - "80:80"
+
 
 volumes:
   cache: {}
