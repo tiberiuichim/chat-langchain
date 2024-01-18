@@ -2,14 +2,13 @@ from langchain.text_splitter import (
     CharacterTextSplitter,
     Language,
     RecursiveCharacterTextSplitter,
-    # TextSplitter,
 )
 from collections import defaultdict
 from langchain.docstore.document import Document
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import os
 import logging
-from pdfsplitter import get_pdf_splitter
+# from pdfsplitter import get_pdf_splitter
 
 from constants import (
     DOCUMENT_MAP,
@@ -158,7 +157,6 @@ def split_documents(documents: list[Document], tokenizer=None) -> list[Document]
         )
         extension_handlers["tokenized"] = huggingface_token_splitter
 
-    # __import__("pdb").set_trace()
     for doc in documents:
         if doc is not None:
             file_extension = os.path.splitext(doc.metadata["source"])[1]
@@ -183,83 +181,4 @@ def split_documents(documents: list[Document], tokenizer=None) -> list[Document]
 
             texts.extend(chunks or [])
 
-    # __import__("pdb").set_trace()
     return texts
-
-
-# import re
-# from bs4 import BeautifulSoup  # , SoupStrainer
-# from parser import langchain_docs_extractor
-# from langchain.document_loaders import RecursiveUrlLoader, SitemapLoader
-# from langchain.utils.html import PREFIXES_TO_IGNORE_REGEX, SUFFIXES_TO_IGNORE_REGEX
-
-
-# def simple_extractor(html: str) -> str:
-#     soup = BeautifulSoup(html, "lxml")
-#     return re.sub(r"\n\n+", "\n\n", soup.text).strip()
-
-
-# def metadata_extractor(meta: dict, soup: BeautifulSoup) -> dict:
-#     title = soup.find("title")
-#     description = soup.find("meta", attrs={"name": "description"})
-#     html = soup.find("html")
-#     return {
-#         "source": meta["loc"],
-#         "title": title.get_text() if title else "",
-#         "description": description.get("content", "") if description else "",
-#         "language": html.get("lang", "") if html else "",
-#         **meta,
-#     }
-
-
-# def load_langchain_docs():
-#     return SitemapLoader(
-#         "https://python.langchain.com/sitemap.xml",
-#         filter_urls=["https://python.langchain.com/"],
-#         parsing_function=langchain_docs_extractor,
-#         default_parser="lxml",
-#         bs_kwargs={
-#             "parse_only": SoupStrainer(
-#                 name=("article", "title", "html", "lang", "content")
-#             ),
-#         },
-#         meta_function=metadata_extractor,
-#     ).load()
-#
-#
-# def load_langsmith_docs():
-#     return RecursiveUrlLoader(
-#         url="https://docs.smith.langchain.com/",
-#         max_depth=8,
-#         extractor=simple_extractor,
-#         prevent_outside=True,
-#         use_async=True,
-#         timeout=600,
-#         # Drop trailing / to avoid duplicate pages.
-#         link_regex=(
-#             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
-#             r"(?:[\#'\"]|\/[\#'\"])"
-#         ),
-#         check_response_status=True,
-#     ).load()
-#
-#
-# def load_api_docs():
-#     return RecursiveUrlLoader(
-#         url="https://api.python.langchain.com/en/latest/",
-#         max_depth=8,
-#         extractor=simple_extractor,
-#         prevent_outside=True,
-#         use_async=True,
-#         timeout=600,
-#         # Drop trailing / to avoid duplicate pages.
-#         link_regex=(
-#             f"href=[\"']{PREFIXES_TO_IGNORE_REGEX}((?:{SUFFIXES_TO_IGNORE_REGEX}.)*?)"
-#             r"(?:[\#'\"]|\/[\#'\"])"
-#         ),
-#         check_response_status=True,
-#         exclude_dirs=(
-#             "https://api.python.langchain.com/en/latest/_sources",
-#             "https://api.python.langchain.com/en/latest/_modules",
-#         ),
-#     ).load()

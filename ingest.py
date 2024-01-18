@@ -36,8 +36,8 @@ def ingest_docs(documents):
             doc.metadata["title"] = doc.metadata["source"]
 
         title = doc.metadata["title"]
-        page = doc.metadata["page"]
-        total_pages = doc.metadata["total_pages"]
+        page = doc.metadata.get("page", 0)
+        total_pages = doc.metadata.get("total_pages", 0)
         doc.metadata["title"] = f"{title} - page {page}/{total_pages}"
 
     client = weaviate.Client(

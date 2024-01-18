@@ -13,6 +13,9 @@ from langserve import add_routes
 
 from chain import ChatRequest, answer_chain
 from constants import DOCUMENTS_DIR
+from ingest import ingest_docs
+from utils import load_documents_from_paths
+from sse_starlette.sse import EventSourceResponse
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +43,10 @@ def get_random_filename(filename: str) -> str:
     return f"{random_name}.{file_ext}"
 
 
+STREAM_DELAY = 1  # second
+RETRY_TIMEOUT = 15000  # milisecond
+
+
 @app.post("/files/")
 async def create_file(request: Request):
     formdata = await request.form()
@@ -62,7 +69,44 @@ async def create_file(request: Request):
             shutil.copyfileobj(value.file, f)
             logger.info("Saved %s", filepath)
 
-    return {"filenames": files}
+    async def event_generator():
+        yield {
+            "event": "log",
+            "id": "log_msg_0",
+            "retry": RETRY_TIMEOUT,
+            "data": f"Loaded files: {files}",
+        }
+
+        # If client closes connection, stop sending events
+        # if await request.is_disconnected():
+        #     raise StopIteration
+
+        yield {
+            "event": "log",
+            "id": "log_msg_1",
+            "retry": RETRY_TIMEOUT,
+            "data": "Loading messages",
+        }
+
+        documents = load_documents_from_paths(filepaths)
+        logger.info("Loaded documents")
+        yield {
+            "event": "log",
+            "id": "log_msg_2",
+            "retry": RETRY_TIMEOUT,
+            "data": "Loaded documents, now indexing",
+        }
+        ingest_docs(documents)
+
+        logger.info("Indexing complete")
+        yield {
+            "event": "log",
+            "id": "log_msg_3",
+            "retry": RETRY_TIMEOUT,
+            "data": "Indexing complete",
+        }
+
+    return EventSourceResponse(event_generator())
 
 
 if __name__ == "__main__":
