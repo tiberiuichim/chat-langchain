@@ -28,3 +28,4 @@ virtualenv .venv
 .venv/bin/pip install -U langchain-community
 .venv/bin/pip install simsimd
 .venv/bin/pip install pymupdf
+.venv/bin/pip install python-multipart
