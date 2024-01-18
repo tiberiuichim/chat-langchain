@@ -62,19 +62,7 @@ def load_document_batch(filepaths):
             return (data_list, filepaths)
 
 
-def load_documents(source_dir: str) -> list[Document]:
-    # Loads all documents from the source documents directory,
-    # including nested folders
-
-    paths = []
-    for root, _, files in os.walk(source_dir):
-        for file_name in files:
-            file_extension = os.path.splitext(file_name)[1]
-            source_file_path = os.path.join(root, file_name)
-            if file_extension in DOCUMENT_MAP.keys():
-                paths.append(source_file_path)
-                print("Importing: " + file_name)
-
+def load_documents_from_paths(paths: list[str]) -> list[Document]:
     # Have at least one worker and at most INGEST_THREADS workers
     n_workers = min(INGEST_THREADS, max(len(paths), 1))
     chunksize = round(len(paths) / n_workers) or 1
@@ -104,6 +92,22 @@ def load_documents(source_dir: str) -> list[Document]:
                 file_log("Exception: %s" % (ex))
 
     return docs
+
+
+def load_documents(source_dir: str) -> list[Document]:
+    # Loads all documents from the source documents directory,
+    # including nested folders
+
+    paths = []
+    for root, _, files in os.walk(source_dir):
+        for file_name in files:
+            file_extension = os.path.splitext(file_name)[1]
+            source_file_path = os.path.join(root, file_name)
+            if file_extension in DOCUMENT_MAP.keys():
+                paths.append(source_file_path)
+                print("Importing: " + file_name)
+
+    return load_documents_from_paths(paths)
 
 
 # We use small chunk sizes because

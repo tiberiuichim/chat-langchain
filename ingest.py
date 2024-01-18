@@ -21,8 +21,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def ingest_docs():
-    documents = load_documents(DOCUMENTS_DIR)
+def ingest_docs(documents):
     logger.info(f"Loaded {len(documents)} from {DOCUMENTS_DIR}")
     docs_transformed = split_documents(documents, tokenizer=None)
 
@@ -79,4 +78,5 @@ def ingest_docs():
 
 
 if __name__ == "__main__":
-    ingest_docs()
+    documents = load_documents(DOCUMENTS_DIR)
+    ingest_docs(documents)

@@ -1,12 +1,20 @@
 """Main entrypoint for the app."""
 
-from typing import Annotated
+import string
+import secrets
+import os
+import shutil
+import logging
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, UploadFile, Request  # File,
+from starlette.datastructures import UploadFile as StarletteUploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
 
 from chain import ChatRequest, answer_chain
+from constants import DOCUMENTS_DIR
+
+logger = logging.getLogger(__name__)
 
 app = FastAPI()
 app.add_middleware(
@@ -24,16 +32,37 @@ add_routes(
 )
 
 
+def get_random_filename(filename: str) -> str:
+    file_ext = filename.split(".")[-1]
+    random_name = "".join(
+        secrets.choice(string.ascii_letters + string.digits) for _ in range(20)
+    )
+    return f"{random_name}.{file_ext}"
+
+
 @app.post("/files/")
-async def create_file(file: Annotated[bytes, File()]):
-    __import__("pdb").set_trace()
-    return {"file_size": len(file)}
+async def create_file(request: Request):
+    formdata = await request.form()
 
+    files = []
+    filepaths = []
 
-@app.post("/uploadfile/")
-async def create_upload_file(file: UploadFile):
-    __import__("pdb").set_trace()
-    return {"filename": file.filename}
+    for value in formdata.values():
+        if not (
+            isinstance(value, UploadFile) or isinstance(
+                value, StarletteUploadFile)
+        ):
+            continue
+        filename = get_random_filename(value.filename or "")
+        filepath = os.path.join(DOCUMENTS_DIR, filename)
+        filepaths.append(filepath)
+        files.append(filename)
+
+        with open(filepath, "wb") as f:
+            shutil.copyfileobj(value.file, f)
+            logger.info("Saved %s", filepath)
+
+    return {"filenames": files}
 
 
 if __name__ == "__main__":
