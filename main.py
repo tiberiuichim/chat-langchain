@@ -59,9 +59,11 @@ async def create_file(request: Request):
             isinstance(value, UploadFile) or isinstance(
                 value, StarletteUploadFile)
         ):
+            logger.warn("Not valid file", value)
             continue
         filename = get_random_filename(value.filename or "")
         filepath = os.path.join(DOCUMENTS_DIR, filename)
+
         filepaths.append(filepath)
         files.append(filename)
 
@@ -69,13 +71,15 @@ async def create_file(request: Request):
             shutil.copyfileobj(value.file, f)
             logger.info("Saved %s", filepath)
 
-    async def event_generator():
+    async def event_generator(filepaths):
         yield {
             "event": "log",
-            "id": "log_msg_0",
+            "id": "start",
             "retry": RETRY_TIMEOUT,
             "data": f"Loaded files: {files}",
         }
+
+        logger.info("Saved filepaths %s", filepaths)
 
         # If client closes connection, stop sending events
         # if await request.is_disconnected():
@@ -89,7 +93,7 @@ async def create_file(request: Request):
         }
 
         documents = load_documents_from_paths(filepaths)
-        logger.info("Loaded documents")
+        logger.info("Loaded documents %s", len(documents))
         yield {
             "event": "log",
             "id": "log_msg_2",
@@ -101,12 +105,14 @@ async def create_file(request: Request):
         logger.info("Indexing complete")
         yield {
             "event": "log",
-            "id": "log_msg_3",
+            "id": "finish",
             "retry": RETRY_TIMEOUT,
             "data": "Indexing complete",
         }
 
-    return EventSourceResponse(event_generator())
+    return EventSourceResponse(
+        event_generator(filepaths), media_type="text/event-stream"
+    )
 
 
 if __name__ == "__main__":

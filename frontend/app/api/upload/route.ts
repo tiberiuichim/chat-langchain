@@ -4,14 +4,18 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const backend = `${process.env.API_URL}/files/`;
-  console.log("upload", req);
+  const response = await fetch(backend, req);
 
-  try {
-    const resp = await fetch(backend, req);
-    console.log("resp", resp);
-    return NextResponse.json({ ok: true }, { status: 200 });
-  } catch (e: any) {
-    console.log("error", e);
-    return NextResponse.json({ error: e.message }, { status: 500 });
+  if (!response.ok) {
+    return NextResponse.json(
+      { error: "An error occurred in backend communication" },
+      { status: response.status },
+    );
   }
+
+  return new Response(response.body, {
+    headers: {
+      "content-type": "text/event-stream",
+    },
+  });
 }

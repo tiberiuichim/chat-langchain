@@ -1,3 +1,28 @@
+  // if (response.body) response.body.pipeTo(res.body);
+
+  // response.body.on("data", (chunk) => {
+  //   res.write(chunk, "binary");
+  // });
+  //
+  // response.body.on("end", () => {
+  //   res.end();
+  // });
+
+  // const stream = fetch(backend, req);
+  // console.log("upload", stream);
+  // // stream
+  // return new NextResponse();
+
+  // const stream = iteratorToStream(iterator)
+
+  // try {
+  //   const resp = await fetch(backend, req);
+  //   console.log("resp", resp);
+  //   return NextResponse.json({ ok: true }, { status: 200 });
+  // } catch (e: any) {
+  //   console.log("error", e);
+  //   return NextResponse.json({ error: e.message }, { status: 500 });
+  // }
 
 
 # import re
