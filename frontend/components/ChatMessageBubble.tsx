@@ -1,7 +1,8 @@
-import type { Message } from "ai/react";
 import { Loader2, UserIcon, BotIcon } from "lucide-react";
-import type { Source } from "./types";
 import { SourceDetails } from "./Source";
+
+import type { Message } from "ai/react";
+import type { Source } from "./types";
 
 type ChatMessageBubbleProps = {
   message: Message;
