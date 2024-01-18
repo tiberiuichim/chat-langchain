@@ -80,6 +80,7 @@ services:
     image: eeacms/apache:2.4-2.9
     environment:
       APACHE_CONFIG: |-
+        LogLevel debug proxy:trace5
         <VirtualHost *:80>
           ServerAdmin helpdesk@climate-adapt.eea.europa.eu
           ServerName test-gpu.pdmz.eea
@@ -116,7 +117,7 @@ services:
           RewriteEngine On
           ProxyPreserveHost On
 
-          RewriteRule ^/api/llm(.*) http://chat:8080/$$1 [P,L]
+          RewriteRule ^/api/llm/(.*) http://chat:8060/$$1 [P,L]
           RewriteRule ^/(.*) http://frontend:3000/$$1 [P,L]
         </VirtualHost>
       TZ: Europe/Copenhagen
