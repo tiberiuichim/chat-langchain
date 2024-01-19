@@ -112,7 +112,7 @@ async def create_file(request: Request):
             "retry": RETRY_TIMEOUT,
             "data": "Loaded documents, now indexing",
         }
-        ingest_docs(documents)
+        ingest_docs(documents, cleanup="incremental")
 
         logger.info("Indexing complete")
         yield {

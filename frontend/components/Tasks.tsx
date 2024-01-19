@@ -6,13 +6,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  // DropdownMenuLabel,
-  // DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { PanelTopClose } from "lucide-react";
+
+// DropdownMenuLabel,
+// DropdownMenuSeparator,
 
 const components: { title: string; href: string; description: string }[] = [
   {
@@ -30,6 +31,11 @@ const components: { title: string; href: string; description: string }[] = [
     title: "Summarizer",
     href: "/summarizer",
     description: "Summarize some text",
+  },
+  {
+    title: "Explore the database",
+    href: "/dbexplorer",
+    description: "Browse all the chunked documents in the database",
   },
 ];
 
