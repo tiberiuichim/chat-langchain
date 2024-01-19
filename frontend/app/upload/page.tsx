@@ -3,11 +3,12 @@
 import { useState } from "react";
 
 import Dropzone from "react-dropzone";
-import { UploadForm } from "@/components/UploadForm";
-import type { CustomBlob } from "@/components/UploadForm";
-import { Card, CardHeader } from "@/components/ui/card";
-
 import { UploadCloudIcon } from "lucide-react";
+
+import { UploadForm } from "@/components/UploadForm";
+import { Card } from "@/components/ui/card";
+
+import type { CustomBlob } from "@/components/UploadForm";
 
 export default function UploadPage() {
   const [showUploadForm, setShowUploadForm] = useState<boolean>(false);
@@ -37,7 +38,7 @@ export default function UploadPage() {
                 <div {...getRootProps()}>
                   <input {...getInputProps()} />
 
-                  <div className="w-full flex flex-col items-center p-1 text-slate-600">
+                  <div className="w-full flex flex-col items-center p-1 text-slate-600 cursor-pointer">
                     <UploadCloudIcon size="64" />
                   </div>
                   <p>Drop some files here, or click to select files</p>
