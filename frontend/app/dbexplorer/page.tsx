@@ -10,11 +10,21 @@ import {
 import { useEffect, useState } from "react";
 import { PanelTopClose } from "lucide-react";
 import { RecordsExplorer } from "@/components/RecordsExplorer";
+import { RecordsPagination } from "@/components/RecordsPagination";
+import usePagination from "@/lib/usePagination";
 
 export default function DBExplorerPage() {
   const [records, setRecords] = useState([]);
+  const [recordsCount, setRecordsCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [indexes, setIndexes] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
+
+  const p = usePagination({
+    pageSize: 10,
+    totalPage: recordsCount,
+    page: currentPage,
+  });
 
   useEffect(() => {
     const headers = {
@@ -88,6 +98,7 @@ export default function DBExplorerPage() {
         </DropdownMenuContent>
       </DropdownMenu>
       <RecordsExplorer records={records} />
+      <RecordsPagination pagination={p} />
     </div>
   );
 }

@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     response = await client.graphql
       .get()
       .withClassName(body.index)
-      .withFields(["title", "text", "source", "page"].join(" "))
+      .withFields(["title", "text", "source", "page", "path"].join(" "))
       .withLimit(10)
       .do();
   } else {
