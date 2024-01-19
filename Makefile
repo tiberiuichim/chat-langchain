@@ -15,3 +15,8 @@ format:
 .PHONY: build
 build:
 	docker build . -t tiberiuichim/llm-chat:0.1
+
+.PHONY: release-frontend
+release-frontend:
+	docker compose build frontend
+	docker compose push frontend
