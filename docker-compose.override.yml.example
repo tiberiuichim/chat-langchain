@@ -1,0 +1,29 @@
+services:
+  frontend:
+      restart: no
+      ports:
+        - 3000:3000
+      # command: sh -c 'cd /app; find .next | grep ".js" | xargs sed -i "s#http://localhost:8080#http://test-gpu-pdmz.eea:8060#g"; node server.js'
+      # entrypoint: /app/entrypoint.sh
+      # volumes:
+        #- ./frontend/entrypoint.sh:/app/entrypoint.sh
+      # command: /home/app/.local/bin/uvicorn main:app --port=8060
+      # env_file:
+      #   - ./.env.example
+      #   - ./.env
+
+  chat:
+    restart: no
+    ports:
+      - 8060:8060
+    # entrypoint: sh -c "tail -f /dev/null"
+
+  weaviate:
+    restart: no
+    # restart: on-failure:0
+    ports:
+    - 8090:8090
+    - 50051:50051
+
+  apache:
+    restart: no
