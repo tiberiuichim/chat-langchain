@@ -27,7 +27,7 @@ export const RecordsPagination: React.FC<RecordsPaginationProps> = ({
           </PaginationItem>
         )}
 
-        {p.currentPage > 3 && (
+        {p.currentPage > 2 && (
           <PaginationItem>
             <PaginationEllipsis />
           </PaginationItem>
@@ -36,24 +36,24 @@ export const RecordsPagination: React.FC<RecordsPaginationProps> = ({
         {p.currentPage > 2 && (
           <PaginationItem>
             <PaginationLink onClick={() => p.go(p.currentPage - 1)}>
-              {p.currentPage - 1}
+              {p.currentPage}
             </PaginationLink>
           </PaginationItem>
         )}
 
         <PaginationItem>
-          <PaginationLink>{p.currentPage}</PaginationLink>
+          <PaginationLink>{p.currentPage + 1}</PaginationLink>
         </PaginationItem>
 
         {p.totalPage - p.currentPage > 2 && (
           <PaginationItem>
             <PaginationLink onClick={() => p.go(p.currentPage + 1)}>
-              {p.currentPage + 1}
+              {p.currentPage + 2}
             </PaginationLink>
           </PaginationItem>
         )}
 
-        {nextChunk > 3 && (
+        {nextChunk > 2 && (
           <PaginationItem>
             <PaginationEllipsis />
           </PaginationItem>

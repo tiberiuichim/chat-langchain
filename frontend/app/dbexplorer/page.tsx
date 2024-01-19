@@ -13,6 +13,8 @@ import { RecordsExplorer } from "@/components/RecordsExplorer";
 import { RecordsPagination } from "@/components/RecordsPagination";
 import usePagination from "@/lib/usePagination";
 
+const pageSize = 10;
+
 export default function DBExplorerPage() {
   const [records, setRecords] = useState([]);
   const [recordsCount, setRecordsCount] = useState(0);
@@ -20,9 +22,10 @@ export default function DBExplorerPage() {
   const [indexes, setIndexes] = useState([]);
   const [activeIndex, setActiveIndex] = useState("");
 
+  const totalPage = Math.ceil(recordsCount / pageSize);
   const p = usePagination({
-    pageSize: 10,
-    totalPage: recordsCount,
+    pageSize,
+    totalPage,
     page: currentPage,
   });
 
@@ -105,6 +108,9 @@ export default function DBExplorerPage() {
       </div>
       <RecordsExplorer records={records} />
       <RecordsPagination pagination={p} />
+      <div>
+        {currentPage} / {totalPage}
+      </div>
     </div>
   );
 }
