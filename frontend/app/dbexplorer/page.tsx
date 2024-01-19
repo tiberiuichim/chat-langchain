@@ -18,7 +18,7 @@ export default function DBExplorerPage() {
   const [recordsCount, setRecordsCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [indexes, setIndexes] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState("");
 
   const p = usePagination({
     pageSize: 10,
@@ -46,6 +46,9 @@ export default function DBExplorerPage() {
         headers,
       });
       const json = await resp.json();
+      const { Get, Aggregate } = json;
+      setRecordsCount(Aggregate[activeIndex][0].meta.count);
+      setRecords(Get[activeIndex]);
       console.log("resp", json);
       // const indexes = json.indexes.classes.map((v) => v.class) || [];
       // setIndexes(indexes);
@@ -67,36 +70,39 @@ export default function DBExplorerPage() {
   return (
     <div>
       <h3>Explore db</h3>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            type="submit"
-            aria-label="Send"
-            onKeyDown={(e) => {
-              e.preventDefault();
-              // sendMessage();
-            }}
-            className="rounded-md border flex space-x-2"
-          >
-            <div>{activeIndex ? activeIndex : "Select an index"}</div>
-            <PanelTopClose className="text-slate-600" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          {indexes.map((name) => (
-            <DropdownMenuItem key={name}>
-              <div
-                className="text-sm text-slate-500"
-                onClick={() => setActiveIndex(name)}
-              >
-                {name}
-              </div>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="flex space-x-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              type="submit"
+              aria-label="Send"
+              onKeyDown={(e) => {
+                e.preventDefault();
+                // sendMessage();
+              }}
+              className="rounded-md border flex space-x-2"
+            >
+              <div>{activeIndex ? activeIndex : "Select an index"}</div>
+              <PanelTopClose className="text-slate-600" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {indexes.map((name) => (
+              <DropdownMenuItem key={name}>
+                <div
+                  className="text-sm text-slate-500"
+                  onClick={() => setActiveIndex(name)}
+                >
+                  {name}
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        {recordsCount > 0 && <div>{`(${recordsCount} records)`}</div>}
+      </div>
       <RecordsExplorer records={records} />
       <RecordsPagination pagination={p} />
     </div>

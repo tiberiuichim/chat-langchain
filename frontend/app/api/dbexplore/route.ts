@@ -25,15 +25,21 @@ export async function POST(req: Request) {
   const client = weaviate.client(options);
   let response;
 
-  if (body.index) {
+  if (!body.index) {
+    response = await client.schema.getter().do();
+  } else {
     response = await client.graphql
       .get()
       .withClassName(body.index)
-      .withFields(["title", "text", "source", "page", "path"].join(" "))
+      .withFields(["title", "text", "source", "page", "file_path"].join(" "))
       .withLimit(10)
       .do();
-  } else {
-    response = await client.schema.getter().do();
+    const count = await client.graphql
+      .aggregate()
+      .withClassName(body.index)
+      .withFields("meta {count}")
+      .do();
+    response = { ...response.data, ...count.data };
   }
 
   return NextResponse.json(response);
