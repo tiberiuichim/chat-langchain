@@ -1,11 +1,16 @@
 from __future__ import annotations
+import time
 
 from typing import Callable, Iterable, Literal, Optional, Sequence, Union, cast
 
 from langchain.document_loaders.base import BaseLoader
-from langchain.indexes._api import (IndexingResult, _batch,
-                                    _deduplicate_in_order,
-                                    _get_source_id_assigner, _HashedDocument)
+from langchain.indexes._api import (
+    IndexingResult,
+    _batch,
+    _deduplicate_in_order,
+    _get_source_id_assigner,
+    _HashedDocument,
+)
 from langchain.indexes.base import RecordManager
 from langchain.schema.document import Document
 from langchain.schema.vectorstore import VectorStore
@@ -16,7 +21,7 @@ def index(
     record_manager: RecordManager,
     vector_store: VectorStore,
     *,
-    batch_size: int = 100,
+    batch_size: int = 50,
     cleanup: Literal["incremental", "full", None] = None,
     source_id_key: Union[str, Callable[[Document], str], None] = None,
     cleanup_batch_size: int = 1_000,
@@ -107,6 +112,7 @@ def index(
     num_deleted = 0
 
     for doc_batch in _batch(batch_size, doc_iterator):
+        # time.sleep(1)
         hashed_docs = list(
             _deduplicate_in_order(
                 [_HashedDocument.from_document(doc) for doc in doc_batch]
@@ -128,7 +134,8 @@ def index(
                         f"as source id."
                     )
             # source ids cannot be None after for loop above.
-            source_ids = cast(Sequence[str], source_ids)  # type: ignore[assignment]
+            # type: ignore[assignment]
+            source_ids = cast(Sequence[str], source_ids)
 
         exists_batch = record_manager.exists([doc.uid for doc in hashed_docs])
 
