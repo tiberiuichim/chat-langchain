@@ -32,6 +32,7 @@
     "eslint": "8.46.0",
     "eslint-config-next": "^14.0.4",
     "fast-json-patch": "^3.1.1",
+    "graphql": "^16.8.1",
     "highlight.js": "^11.9.0",
     "lucide-react": "^0.309.0",
     "marked": "^11.1.1",
