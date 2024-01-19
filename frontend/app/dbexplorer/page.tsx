@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useEffect, useState } from "react";
 import { PanelTopClose } from "lucide-react";
+import { RecordsExplorer } from "@/components/RecordsExplorer";
 
 export default function DBExplorerPage() {
   const [records, setRecords] = useState([]);
@@ -16,20 +17,42 @@ export default function DBExplorerPage() {
   const [activeIndex, setActiveIndex] = useState(null);
 
   useEffect(() => {
-    const handler = async () => {
-      const resp = await fetch("/api/dbexplore", { method: "post" });
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
+    const fetchIndexes = async () => {
+      const resp = await fetch("/api/dbexplore", { method: "post", headers });
       const json = await resp.json();
       console.log("resp", json);
-      const indexes = json.indexes.classes.map((v) => v.class) || [];
+      const indexes = json.classes.map((v) => v.class) || [];
       setIndexes(indexes);
     };
 
-    handler();
+    const fetchRecords = async () => {
+      const resp = await fetch("/api/dbexplore", {
+        method: "post",
+        body: JSON.stringify({ index: activeIndex }),
+        headers,
+      });
+      const json = await resp.json();
+      console.log("resp", json);
+      // const indexes = json.indexes.classes.map((v) => v.class) || [];
+      // setIndexes(indexes);
+    };
+
+    if (indexes.length === 0) {
+      fetchIndexes();
+    }
+
+    if (activeIndex) {
+      fetchRecords();
+    }
 
     return () => {
       //
     };
-  }, []);
+  }, [indexes.length, activeIndex]);
 
   return (
     <div>
@@ -64,6 +87,7 @@ export default function DBExplorerPage() {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
+      <RecordsExplorer records={records} />
     </div>
   );
 }
