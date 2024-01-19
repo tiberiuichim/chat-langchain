@@ -30,8 +30,20 @@ app.add_middleware(
 )
 
 
+# add_routes(
+#     # input_type=ChatRequest, config_keys=["metadata"]
+#     app,
+#     answer_chain,
+#     path="/chat",
+# )
+
+
 add_routes(
-    app, answer_chain, path="/chat", input_type=ChatRequest, config_keys=["metadata"]
+    # input_type=ChatRequest, config_keys=["metadata"]
+    app,
+    answer_chain.with_types(input_type=ChatRequest),
+    config_keys=["metadata"],
+    path="/chat",
 )
 
 
@@ -56,8 +68,7 @@ async def create_file(request: Request):
 
     for value in formdata.values():
         if not (
-            isinstance(value, UploadFile) or isinstance(
-                value, StarletteUploadFile)
+            isinstance(value, UploadFile) or isinstance(value, StarletteUploadFile)
         ):
             logger.warn("Not valid file", value)
             continue

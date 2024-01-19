@@ -4,7 +4,6 @@ from typing import Dict, List, Optional, Sequence
 import weaviate
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from langchain_community.chat_models import ChatOpenAI
 
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain.schema import Document
@@ -21,7 +20,14 @@ from langchain.schema.runnable import (
 )
 from langchain.vectorstores.weaviate import Weaviate
 from pydantic import BaseModel
-from langchain_community.embeddings import HuggingFaceInstructEmbeddings
+
+from langchain_openai import OpenAIEmbeddings
+from langchain_openai import ChatOpenAI
+
+# from langchain_community.embeddings import OpenAIEmbeddings
+# from langchain_community.chat_models import ChatOpenAI
+# from langchain_community.embeddings import HuggingFaceInstructEmbeddings
+# from langchain_together.embeddings import TogetherEmbeddings
 
 from constants import (
     OPENAI_API_KEY,
@@ -53,10 +59,18 @@ class ChatRequest(BaseModel):
 
 
 def get_embeddings_model() -> Embeddings:
-    embeddings = HuggingFaceInstructEmbeddings(
-        model_name=EMBEDDING_MODEL_NAME,
-        model_kwargs={"device": "cuda"},
+    # embeddings = HuggingFaceInstructEmbeddings(
+    #     model_name=EMBEDDING_MODEL_NAME,
+    #     model_kwargs={"device": "cuda"},
+    # )
+
+    embeddings = OpenAIEmbeddings(
+        openai_api_base=OPENAI_API_BASE,
+        openai_api_key=OPENAI_API_KEY,
+        model=EMBEDDING_MODEL_NAME,
     )
+    # embeddings = TogetherEmbeddings(
+    #     model="togethercomputer/m2-bert-80M-8k-retrieval")
     return embeddings
 
 
