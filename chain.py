@@ -27,7 +27,7 @@ from langchain_openai import ChatOpenAI
 # from langchain_community.embeddings import OpenAIEmbeddings
 # from langchain_community.chat_models import ChatOpenAI
 # from langchain_community.embeddings import HuggingFaceInstructEmbeddings
-# from langchain_together.embeddings import TogetherEmbeddings
+from langchain_together.embeddings import TogetherEmbeddings
 
 from constants import (
     OPENAI_API_KEY,
@@ -64,13 +64,15 @@ def get_embeddings_model() -> Embeddings:
     #     model_kwargs={"device": "cuda"},
     # )
 
-    embeddings = OpenAIEmbeddings(
-        openai_api_base=OPENAI_API_BASE,
-        openai_api_key=OPENAI_API_KEY,
-        model=EMBEDDING_MODEL_NAME,
+    # __import__("pdb").set_trace()
+    # embeddings = OpenAIEmbeddings(
+    #     openai_api_base=OPENAI_API_BASE,
+    #     openai_api_key=OPENAI_API_KEY,
+    #     model=EMBEDDING_MODEL_NAME,
+    # )
+    embeddings = TogetherEmbeddings(
+        model=EMBEDDING_MODEL_NAME, together_api_key=OPENAI_API_KEY
     )
-    # embeddings = TogetherEmbeddings(
-    #     model="togethercomputer/m2-bert-80M-8k-retrieval")
     return embeddings
 
 

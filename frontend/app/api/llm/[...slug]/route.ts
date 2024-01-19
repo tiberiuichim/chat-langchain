@@ -11,7 +11,7 @@ export async function POST(
     slug = slug.join("/");
   }
   const backend = `${process.env.API_URL}/${slug}`;
-  // console.log("backend", backend);
+  console.log("backend", backend);
   const response = await fetch(backend, req);
 
   if (!response.ok) {
