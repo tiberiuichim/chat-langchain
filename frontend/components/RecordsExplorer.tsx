@@ -6,11 +6,18 @@ import {
   TableHead,
   TableBody,
   TableCell,
-  // TableFooter,
 } from "./ui/table";
 
+type Record = {
+  title: string;
+  page?: string;
+  file_path?: string;
+  source: string;
+  text: string;
+};
+
 type RecordsExplorerProps = {
-  records: unknown[];
+  records: Record[];
 };
 
 export const RecordsExplorer: React.FC<RecordsExplorerProps> = ({
@@ -21,19 +28,21 @@ export const RecordsExplorer: React.FC<RecordsExplorerProps> = ({
       <TableCaption>A list of your recent invoices.</TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Method</TableHead>
-          <TableHead className="text-right">Amount</TableHead>
+          <TableHead className="w-[100px]">Source</TableHead>
+          <TableHead>Title</TableHead>
+          <TableHead>Text</TableHead>
+          <TableHead className="text-right">Page</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          <TableCell className="font-medium">INV001</TableCell>
-          <TableCell>Paid</TableCell>
-          <TableCell>Credit Card</TableCell>
-          <TableCell className="text-right">$250.00</TableCell>
-        </TableRow>
+        {records.map((rec, i) => (
+          <TableRow key={i}>
+            <TableCell className="font-medium">{rec.source}</TableCell>
+            <TableCell>{rec.title}</TableCell>
+            <TableCell>{rec.text}</TableCell>
+            <TableCell className="text-right">{rec.page}</TableCell>
+          </TableRow>
+        ))}
       </TableBody>
     </Table>
   );
