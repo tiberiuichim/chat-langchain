@@ -1,6 +1,6 @@
 .PHONY: start
 start:
-	poetry run uvicorn main:app --reload --port 8080
+	poetry run uvicorn main:app --reload --port 8060
 	# .venv/bin/uvicorn main:app --reload --port 8080
 
 ingest:

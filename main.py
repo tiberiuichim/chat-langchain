@@ -30,21 +30,22 @@ app.add_middleware(
 )
 
 
+add_routes(
+    app,
+    answer_chain,
+    path="/chat",
+    input_type=ChatRequest,
+    config_keys=["metadata"],
+)
+
+
 # add_routes(
 #     # input_type=ChatRequest, config_keys=["metadata"]
 #     app,
-#     answer_chain,
+#     answer_chain.with_types(input_type=ChatRequest),
+#     config_keys=["metadata"],
 #     path="/chat",
 # )
-
-
-add_routes(
-    # input_type=ChatRequest, config_keys=["metadata"]
-    app,
-    answer_chain.with_types(input_type=ChatRequest),
-    config_keys=["metadata"],
-    path="/chat",
-)
 
 
 def get_random_filename(filename: str) -> str:

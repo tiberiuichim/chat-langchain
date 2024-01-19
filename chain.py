@@ -106,8 +106,7 @@ def create_retriever_chain(
             RunnableLambda(lambda x: bool(x.get("chat_history"))).with_config(
                 run_name="HasChatHistoryCheck"
             ),
-            conversation_chain.with_config(
-                run_name="RetrievalChainWithHistory"),
+            conversation_chain.with_config(run_name="RetrievalChainWithHistory"),
         ),
         (
             RunnableLambda(itemgetter("question")).with_config(
@@ -132,8 +131,7 @@ def serialize_history(request: ChatRequest):
 
     for message in chat_history:
         if message.get("human") is not None:
-            converted_chat_history.append(
-                HumanMessage(content=message["human"]))
+            converted_chat_history.append(HumanMessage(content=message["human"]))
         if message.get("ai") is not None:
             converted_chat_history.append(AIMessage(content=message["ai"]))
 
@@ -169,9 +167,11 @@ def create_chain(
         }
     ).with_config(run_name="RetrieveDocs")
 
+    get_question = itemgetter("question")
+
     chain = (
         {
-            "question": RunnableLambda(itemgetter("question")).with_config(
+            "question": RunnableLambda(get_question).with_config(
                 run_name="Itemgetter:question"
             ),
             "chat_history": RunnableLambda(serialize_history).with_config(
