@@ -58,16 +58,20 @@ export const RecordsPagination: React.FC<RecordsPaginationProps> = ({
       <PaginationNext onClick={() => p.next()} />
     </PaginationItem>
   );
+  const lastPageNumber = null;
+  const firstPageNumber = null;
 
   return (
     <Pagination>
       <PaginationContent>
         {previousButton}
+        {firstPageNumber}
         {headEllipsis}
         {prevPageNumber}
         {currentPageNumber}
         {nextPageNumber}
         {tailEllipsis}
+        {lastPageNumber}
         {nextButton}
       </PaginationContent>
     </Pagination>
