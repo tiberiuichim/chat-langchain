@@ -1,6 +1,23 @@
-FROM python:3.10-bookworm as builder
+# FROM python:3.11-buster
+#
+# RUN pip install poetry==1.5.1
+#
+# RUN poetry config virtualenvs.create false
+#
+# COPY ./pyproject.toml ./poetry.lock* ./
+#
+# RUN poetry install --no-interaction --no-ansi --no-root --no-directory
+#
+# COPY ./*.py ./
+#
+# RUN poetry install  --no-interaction --no-ansi
+#
+# CMD exec uvicorn main:app --host 0.0.0.0 --port 8080
+
+# BUILDER
+FROM nvidia/cuda:12.1.1-devel-ubuntu22.04 as builder
 WORKDIR /builder
-# ARG TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST:-3.5;5.0;6.0;6.1;7.0;7.5;8.0;8.6+PTX}"
+ARG TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST:-3.5;5.0;6.0;6.1;7.0;7.5;8.0;8.6+PTX}"
 ARG BUILD_REQUIREMENTS="${BUILD_REQUIREMENTS:-requirements.txt}"
 ARG APP_UID="${APP_UID:-6972}"
 ARG APP_GID="${APP_GID:-6972}"
@@ -26,9 +43,8 @@ RUN --mount=type=cache,target=/root/.cache/pip,rw \
 RUN rm wheels/setuptools*.whl
 
 # RUNTIME
-# FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
-FROM python:3.10-bookworm
-# ARG TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST:-3.5;5.0;6.0;6.1;7.0;7.5;8.0;8.6}"
+FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
+ARG TORCH_CUDA_ARCH_LIST="${TORCH_CUDA_ARCH_LIST:-3.5;5.0;6.0;6.1;7.0;7.5;8.0;8.6}"
 ARG APP_UID="${APP_UID:-6972}"
 ARG APP_GID="${APP_GID:-6972}"
 ENV CLI_ARGS=""
@@ -55,23 +71,3 @@ EXPOSE ${CONTAINER_PORT:-8080}
 # set umask to ensure group read / write at runtime
 # export HOME=/home/app/chat
 CMD umask 0002 && cd /home/app/chat && exec /home/app/.local/bin/uvicorn main:app --host 0.0.0.0 --port ${CONTAINER_PORT:-8080} ${CLI_ARGS}
-
-# FROM python:3.11-buster
-#
-# RUN pip install poetry==1.5.1
-#
-# RUN poetry config virtualenvs.create false
-#
-# COPY ./pyproject.toml ./poetry.lock* ./
-#
-# RUN poetry install --no-interaction --no-ansi --no-root --no-directory
-#
-# COPY ./*.py ./
-#
-# RUN poetry install  --no-interaction --no-ansi
-#
-# CMD exec uvicorn main:app --host 0.0.0.0 --port 8080
-
-# BUILDER
-# FROM nvidia/cuda:12.1.1-devel-ubuntu22.04 as builder
-
