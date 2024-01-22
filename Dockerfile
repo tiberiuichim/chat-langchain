@@ -9,6 +9,7 @@ COPY ./pyproject.toml ./poetry.lock* ./
 RUN poetry install --no-interaction --no-ansi --no-root --no-directory
 
 COPY ./*.py ./
+COPY prompt_templates ./
 
 RUN poetry install  --no-interaction --no-ansi
 
