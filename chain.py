@@ -19,7 +19,7 @@ from langchain.schema.runnable import (
     RunnableMap,
 )
 from langchain.vectorstores.weaviate import Weaviate
-from pydantic import BaseModel
+from pydantic.v1 import BaseModel
 
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
