@@ -10,7 +10,7 @@ services:
     entrypoint: sh -c "tail -f /dev/null"
 
   frontend:
-    image: tiberiuichim/llm-chat-frontend:0.2
+    image: tiberiuichim/llm-chat-frontend:0.3
     build: ./frontend
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://test-gpu.pdmz.eea:8060
