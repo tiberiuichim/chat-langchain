@@ -12,3 +12,5 @@ docker-compose.yml
 .env
 build.env
 cache
+start.sh
+start_dev.sh
