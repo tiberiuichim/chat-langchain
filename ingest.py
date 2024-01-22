@@ -1,12 +1,13 @@
 """Load html from files, clean up, split, ingest into Weaviate."""
 
+from typing import Literal
 import logging
 import os
 import weaviate
 from langchain.indexes import SQLRecordManager
 from langchain.vectorstores.weaviate import Weaviate
 
-from _index import index
+from _index import index, Cleanup
 from utils import load_documents, split_documents
 from chain import get_embeddings_model
 from constants import (
@@ -21,7 +22,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def ingest_docs(documents):
+def ingest_docs(documents, cleanup: Cleanup = "full"):
     logger.info(f"Loaded {len(documents)} from {DOCUMENTS_DIR}")
     docs_transformed = split_documents(documents, tokenizer=None)
 
@@ -63,15 +64,13 @@ def ingest_docs(documents):
         docs_transformed,
         record_manager,
         vectorstore,
-        cleanup="full",
+        cleanup=cleanup,
         source_id_key="source",
-        force_update=(os.environ.get("FORCE_UPDATE")
-                      or "false").lower() == "true",
+        force_update=(os.environ.get("FORCE_UPDATE") or "false").lower() == "true",
     )
 
     logger.info(f"Indexing stats: {indexing_stats}")
-    num_vecs = client.query.aggregate(
-        WEAVIATE_DOCS_INDEX_NAME).with_meta_count().do()
+    num_vecs = client.query.aggregate(WEAVIATE_DOCS_INDEX_NAME).with_meta_count().do()
     logger.info(
         f"LangChain now has this many vectors: {num_vecs}",
     )

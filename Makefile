@@ -24,3 +24,8 @@ build:
 release-frontend:
 	docker compose build frontend
 	docker compose push frontend
+
+.PHONY: release-backend
+release-backend:
+	docker compose build chat
+	docker compose push chat

@@ -1,5 +1,5 @@
 from __future__ import annotations
-import time
+# import time
 
 from typing import Callable, Iterable, Literal, Optional, Sequence, Union, cast
 
@@ -15,6 +15,8 @@ from langchain.indexes.base import RecordManager
 from langchain.schema.document import Document
 from langchain.schema.vectorstore import VectorStore
 
+Cleanup = Literal["incremental", "full", None]
+
 
 def index(
     docs_source: Union[BaseLoader, Iterable[Document]],
@@ -22,7 +24,7 @@ def index(
     vector_store: VectorStore,
     *,
     batch_size: int = 50,
-    cleanup: Literal["incremental", "full", None] = None,
+    cleanup: Cleanup = None,
     source_id_key: Union[str, Callable[[Document], str], None] = None,
     cleanup_batch_size: int = 1_000,
     force_update: bool = False,
