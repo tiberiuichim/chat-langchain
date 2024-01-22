@@ -1,4 +1,5 @@
-FROM python:3.10-bookworm as builder
+# FROM python:3.10-bookworm as builder
+FROM python:3.10-bullseye
 
 RUN pip install -U poetry
 
