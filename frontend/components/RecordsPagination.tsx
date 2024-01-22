@@ -17,49 +17,68 @@ export const RecordsPagination: React.FC<RecordsPaginationProps> = ({
   pagination: p,
 }) => {
   const nextChunk = p.totalPage - p.currentPage;
+
   const previousButton = p.hasPreviousPage && (
     <PaginationItem>
       <PaginationPrevious onClick={() => p.back()} />
     </PaginationItem>
   );
-  const headEllipsis = p.currentPage > 2 && (
+
+  const firstPageNumber = p.currentPage > 1 && (
+    <PaginationItem>
+      <PaginationLink onClick={() => p.back(true)}>1</PaginationLink>
+    </PaginationItem>
+  );
+
+  const headEllipsis = p.currentPage > 3 && (
     <PaginationItem>
       <PaginationEllipsis />
     </PaginationItem>
   );
+
   const prevPageNumber = p.currentPage > 2 && (
     <PaginationItem>
-      <PaginationLink onClick={() => p.go(p.currentPage - 1)}>
-        {p.currentPage}
+      <PaginationLink onClick={() => p.go(p.currentPage - 2)}>
+        {p.currentPage - 1}
       </PaginationLink>
     </PaginationItem>
   );
+
   const currentPageNumber = (
     <PaginationItem>
-      <PaginationLink className="font-black">
+      <PaginationLink className="font-black">{p.currentPage}</PaginationLink>
+    </PaginationItem>
+  );
+
+  const nextPageNumber = p.totalPage - p.currentPage > 1 && (
+    <PaginationItem>
+      <PaginationLink onClick={() => p.go(p.currentPage + 1)}>
         {p.currentPage + 1}
       </PaginationLink>
     </PaginationItem>
   );
-  const nextPageNumber = p.totalPage - p.currentPage > 2 && (
-    <PaginationItem>
-      <PaginationLink onClick={() => p.go(p.currentPage + 1)}>
-        {p.currentPage + 2}
-      </PaginationLink>
-    </PaginationItem>
-  );
+
   const tailEllipsis = nextChunk > 2 && (
     <PaginationItem>
       <PaginationEllipsis />
     </PaginationItem>
   );
-  const nextButton = p.hasNextPage && (
+
+  const nextButton = p.hasNextPage && p.currentPage < p.totalPage && (
     <PaginationItem>
       <PaginationNext onClick={() => p.next()} />
     </PaginationItem>
   );
-  const lastPageNumber = null;
-  const firstPageNumber = null;
+
+  const lastPageNumber = p.currentPage > 1 &&
+    p.hasNextPage &&
+    p.totalPage !== p.currentPage && (
+      <PaginationItem>
+        <PaginationLink onClick={() => p.go(p.totalPage)}>
+          {p.totalPage}
+        </PaginationLink>
+      </PaginationItem>
+    );
 
   return (
     <Pagination>

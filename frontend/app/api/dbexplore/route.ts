@@ -6,7 +6,9 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
   const server = process.env.WEAVIATE_URL || "http://localhost:8060";
   let body = {
-    index: null,
+    index: process.env.WEAVIATE_DOCS_INDEX_NAME,
+    pageSize: 10,
+    page: 1,
   };
   try {
     body = await req.json();
@@ -14,7 +16,10 @@ export async function POST(req: Request) {
     //
   }
 
-  // const index = process.env.WEAVIATE_DOCS_INDEX_NAME || "";
+  const index = body.index || process.env.WEAVIATE_DOCS_INDEX_NAME || "";
+  const pageSize = body.pageSize || 10;
+  const page = body.page || 1;
+  const offset = (page - 1) * pageSize;
 
   const url = new URL(server);
   const options = {
@@ -23,23 +28,22 @@ export async function POST(req: Request) {
   };
 
   const client = weaviate.client(options);
-  let response;
+  let response = await client.schema.getter().do();
 
-  if (!body.index) {
-    response = await client.schema.getter().do();
-  } else {
-    response = await client.graphql
+  if (index) {
+    const extra = await client.graphql
       .get()
-      .withClassName(body.index)
+      .withClassName(index)
       .withFields(["title", "text", "source", "page", "file_path"].join(" "))
-      .withLimit(10)
+      .withLimit(pageSize)
+      .withOffset(offset)
       .do();
     const count = await client.graphql
       .aggregate()
-      .withClassName(body.index)
+      .withClassName(index)
       .withFields("meta {count}")
       .do();
-    response = { ...response.data, ...count.data };
+    response = { ...extra.data, ...count.data };
   }
 
   return NextResponse.json(response);

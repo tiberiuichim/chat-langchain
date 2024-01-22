@@ -18,7 +18,7 @@ const pageSize = 10;
 export default function DBExplorerPage() {
   const [records, setRecords] = useState([]);
   const [recordsCount, setRecordsCount] = useState(0);
-  const [currentPage, setCurrentPage] = useState(0);
+  // const [currentPage, setCurrentPage] = useState(0);
   const [indexes, setIndexes] = useState([]);
   const [activeIndex, setActiveIndex] = useState("");
 
@@ -26,7 +26,7 @@ export default function DBExplorerPage() {
   const p = usePagination({
     pageSize,
     totalPage,
-    page: currentPage,
+    page: 1,
   });
 
   useEffect(() => {
@@ -34,41 +34,43 @@ export default function DBExplorerPage() {
       Accept: "application/json",
       "Content-Type": "application/json",
     };
-    const fetchIndexes = async () => {
-      const resp = await fetch("/api/dbexplore", { method: "post", headers });
-      const json = await resp.json();
-      console.log("resp", json);
-      const indexes = json.classes.map((v) => v.class) || [];
-      setIndexes(indexes);
-    };
+    // const fetchIndexes = async () => {
+    //   const resp = await fetch("/api/dbexplore", { method: "post", headers });
+    //   const json = await resp.json();
+    //   console.log("resp", json);
+    //   const indexes = json.classes.map((v) => v.class) || [];
+    //   setIndexes(indexes);
+    // };
 
     const fetchRecords = async () => {
       const resp = await fetch("/api/dbexplore", {
         method: "post",
-        body: JSON.stringify({ index: activeIndex }),
+        body: JSON.stringify({
+          index: activeIndex,
+          page: p.currentPage,
+          pageSize,
+        }),
         headers,
       });
       const json = await resp.json();
       const { Get, Aggregate } = json;
-      setRecordsCount(Aggregate[activeIndex][0].meta.count);
-      setRecords(Get[activeIndex]);
+      const fallbackIndex = activeIndex || Object.keys(Get)[0];
+      if (!activeIndex && fallbackIndex !== activeIndex) {
+        setActiveIndex(fallbackIndex);
+      }
+      setRecordsCount(Aggregate[fallbackIndex][0].meta.count);
+      setRecords(Get[fallbackIndex]);
       console.log("resp", json);
       // const indexes = json.indexes.classes.map((v) => v.class) || [];
       // setIndexes(indexes);
     };
 
-    if (indexes.length === 0) {
-      fetchIndexes();
-    }
-
-    if (activeIndex) {
-      fetchRecords();
-    }
+    fetchRecords();
 
     return () => {
       //
     };
-  }, [indexes.length, activeIndex]);
+  }, [indexes.length, activeIndex, p.currentPage]);
 
   return (
     <div>
@@ -109,7 +111,7 @@ export default function DBExplorerPage() {
       <RecordsExplorer records={records} />
       <RecordsPagination pagination={p} />
       <div>
-        {currentPage} / {totalPage}
+        {p.currentPage} / {totalPage}
       </div>
     </div>
   );

@@ -25,21 +25,21 @@ export const RecordsExplorer: React.FC<RecordsExplorerProps> = ({
 }) => {
   return (
     <Table>
-      <TableCaption>A list of your recent invoices.</TableCaption>
+      <TableCaption></TableCaption>
       <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Source</TableHead>
-          <TableHead>Title</TableHead>
           <TableHead>Text</TableHead>
+          {/* <TableHead className="w-[100px]">Source</TableHead> */}
+          <TableHead>Title</TableHead>
           <TableHead className="text-right">Page</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {records.map((rec, i) => (
           <TableRow key={i}>
-            <TableCell className="font-medium">{rec.source}</TableCell>
-            <TableCell>{rec.title}</TableCell>
             <TableCell>{rec.text}</TableCell>
+            {/* <TableCell className="font-medium">{rec.source}</TableCell> */}
+            <TableCell>{rec.title}</TableCell>
             <TableCell className="text-right">{rec.page}</TableCell>
           </TableRow>
         ))}
