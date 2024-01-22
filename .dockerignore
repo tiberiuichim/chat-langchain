@@ -9,6 +9,7 @@ frontend/
 *.log
 Makefile
 docker-compose.yml
+*.yml
 .env
 build.env
 cache
