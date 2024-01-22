@@ -74,10 +74,8 @@ jsonpointer==2.4
 keyring==24.3.0
 kiwisolver==1.4.5
 langdetect==1.0.9
-langserve==0.0.34
-langsmith==0.0.80
 layoutparser==0.3.4
-llama-index==0.9.30
+# llama-index==0.9.30
 # llama_cpp_python==0.2.26+cu122
 lxml==4.9.3
 Markdown==3.5.1
@@ -183,7 +181,7 @@ tensorboard==2.15.1
 tensorboard-data-server==0.7.2
 termcolor==2.4.0
 threadpoolctl==3.2.0
-tiktoken==0.4.0
+# tiktoken==0.4.0
 timm==0.9.12
 tokenizers==0.15.0
 tomli==2.0.1
@@ -289,11 +287,12 @@ autoawq==0.1.8; platform_system == "Linux" or platform_system == "Windows"
 #langchain-core==0.1.8
 
 # langchain-together
+langsmith==0.0.80
 langchain-openai
 langchain-experimental==0.0.49
-langchain==0.1.1 
-langchain-community==0.0.13 
-langchain-core==0.1.12 
+langchain==0.1.1
+langchain-community==0.0.13
+langchain-core==0.1.12
 langserve==0.0.39
 pydantic==1.10.0
 pydantic_core==2.14.6

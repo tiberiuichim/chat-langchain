@@ -69,4 +69,5 @@ RUN umask 0002 && \
 WORKDIR /home/app/chat
 EXPOSE ${CONTAINER_PORT:-8080}
 # set umask to ensure group read / write at runtime
-CMD umask 0002 && export HOME=/home/app/chat && exec /home/app/.local/bin/uvicorn main:app --host 0.0.0.0 --port ${CONTAINER_PORT:-8080} ${CLI_ARGS}
+# export HOME=/home/app/chat
+CMD umask 0002 && cd /home/app/chat && exec /home/app/.local/bin/uvicorn main:app --host 0.0.0.0 --port ${CONTAINER_PORT:-8080} ${CLI_ARGS}
