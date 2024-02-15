@@ -1,14 +1,22 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { TextFieldInput, TextareaFieldInput } from "@/components/ui/formfields";
 import { toast } from "@/components/ui/use-toast";
+import { useBackendSettings } from "@/lib/useBackendSettings";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const minMsg = "Needs to be at least 2 characters";
+
+const tolist = (s: string) =>
+  s
+    .trim()
+    .split("\n")
+    .map((l) => l.trim());
 
 const formSchema = z.object({
   titleText: z.string().min(2, {
@@ -19,6 +27,9 @@ const formSchema = z.object({
 });
 
 export default function SettingsPage() {
+  const { query, mutation } = useBackendSettings();
+  console.log(query);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -30,6 +41,11 @@ export default function SettingsPage() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
+    mutation.mutate({
+      ...values,
+      presetQuestions: tolist(values.presetQuestions),
+    });
+
     toast({
       title: "You submitted the following values:",
       description: (
@@ -64,7 +80,7 @@ export default function SettingsPage() {
               id="presetQuestions"
               label="Preset default questions"
               placeholder="Tell me a joke"
-              description="These will be used for the question cards on the frontpage"
+              description="These will be used for the question cards on the frontpage. One question per line"
               rows={4}
             />
             <Button type="submit">Submit</Button>

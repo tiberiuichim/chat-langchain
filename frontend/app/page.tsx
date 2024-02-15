@@ -1,20 +1,10 @@
 import { ChatWindow } from "@/components/SimpleChatWindow";
-
-type Settings = {
-  titleText: string;
-  placeholder: string;
-  presetQuestions: string[];
-};
-
-async function getSettings() {
-  const url = `${process.env.API_URL}/getenv`;
-  const res = await fetch(url);
-  const settings: Settings = await res.json();
-  return settings;
-}
+import { useBackendSettings } from "@/lib/useBackendSettings";
 
 export default async function DefaultPage() {
-  const data = await getSettings();
+  const { query } = useBackendSettings();
+  const { data } = query;
+
   const titleText = "Ask me anything about (some) EEA documents!";
   const placeholder = "Ask a question. Enter multiple lines with Shift+Enter";
   const presetQuestions = [

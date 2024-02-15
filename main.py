@@ -1,5 +1,7 @@
 """Main entrypoint for the app."""
 
+from contextlib import asynccontextmanager
+from typing import List
 import transaction
 from ZODB.FileStorage import FileStorage
 import ZODB
@@ -22,6 +24,7 @@ from ingest import ingest_docs
 from utils import load_documents_from_paths
 from sse_starlette.sse import EventSourceResponse
 from data import App
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -30,22 +33,31 @@ RETRY_TIMEOUT = 15000  # milisecond
 
 dbpath = os.environ.get("DB_PATH", "data.fs")
 
-
-storage = FileStorage(dbpath)
-db = ZODB.DB(storage)
-connection = db.open()
-root = connection.root
-# __import__("pdb").set_trace()
-
-dbapp = getattr(root, "app", None)
-
-if dbapp is None:
-    root.app = App()
-    root.app._p_changed = True
-    transaction.commit()
+_local = {}
 
 
-app = FastAPI()
+@asynccontextmanager
+async def app_lifespan(app: FastAPI):
+    storage = FileStorage(dbpath)
+    db = ZODB.DB(storage)
+    connection = db.open()
+    root = connection.root
+
+    dbapp = getattr(root, "app", None)
+
+    if dbapp is None:
+        root.app = App()
+        root.app._p_changed = True
+        transaction.commit()
+
+    _local["dbapp"] = dbapp
+
+    yield
+
+    db.close()
+
+
+app = FastAPI(lifespan=app_lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -65,15 +77,6 @@ add_routes(
 )
 
 
-# add_routes(
-#     # input_type=ChatRequest, config_keys=["metadata"]
-#     app,
-#     answer_chain.with_types(input_type=ChatRequest),
-#     config_keys=["metadata"],
-#     path="/chat",
-# )
-
-
 def get_random_filename(filename: str) -> str:
     file_ext = filename.split(".")[-1]
     random_name = "".join(
@@ -82,9 +85,34 @@ def get_random_filename(filename: str) -> str:
     return f"{random_name}.{file_ext}"
 
 
-@app.get("/getenv")
+class Settings(BaseModel):
+    titleText: str
+    placeholder: str
+    presetQuestions: List[str]
+
+
+@app.get("/settings")
 def get_env():
-    s = root.app.settings
+    s = _local["dbapp"].settings
+
+    res = {
+        "titleText": s.titleText,
+        "placeholder": s.placeholder,
+        "presetQuestions": list(s.presetQuestions),
+    }
+
+    return res
+
+
+@app.post("/settings")
+def post_env(data: Settings):
+    s = _local["dbapp"].settings
+
+    s.titleText = data.titleText
+    s.placeholder = data.placeholder
+    s.presetQuestions = data.presetQuestions
+
+    s._p_changed = True
 
     res = {
         "titleText": s.titleText,
