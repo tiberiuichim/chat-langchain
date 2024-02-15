@@ -1,5 +1,4 @@
 import { ChatWindow } from "@/components/SimpleChatWindow";
-import type { InferGetStaticPropsType, GetStaticProps } from "next";
 
 type Settings = {
   titleText: string;
