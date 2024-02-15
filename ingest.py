@@ -29,16 +29,24 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
     # We try to return 'source' and 'title' metadata when querying vector store and
     # Weaviate will error at query time if one of the attributes is missing from a
     # retrieved document.
-    for doc in docs_transformed:
+#    import pdb; pdb.set_trace()
+    fallback_total_pages = len(docs_transformed)
+    for idx, doc in enumerate(docs_transformed):
+#    for doc in docs_transformed:
         # __import__("pdb").set_trace()
         if "source" not in doc.metadata:
             doc.metadata["source"] = ""
         if "title" not in doc.metadata:
             doc.metadata["title"] = doc.metadata["source"]
+        if "file_path" not in doc.metadata:
+            doc.metadata["file_path"] = doc.metadata["source"]
+        if "page" not in doc.metadata:
+            doc.metadata["page"] = idx + 1
 
         title = doc.metadata["title"]
         page = doc.metadata.get("page", 0)
-        total_pages = doc.metadata.get("total_pages", 0)
+        total_pages = doc.metadata.get("total_pages", fallback_total_pages)
+#        total_pages = doc.metadata.get("total_pages", 0)
         doc.metadata["title"] = f"{title} - page {page}/{total_pages}"
 
     client = weaviate.Client(
