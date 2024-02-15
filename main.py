@@ -1,5 +1,10 @@
 """Main entrypoint for the app."""
 
+import transaction
+from ZODB.FileStorage import FileStorage
+import ZODB
+
+# import pickledb
 import string
 import secrets
 import os
@@ -16,8 +21,29 @@ from constants import DOCUMENTS_DIR
 from ingest import ingest_docs
 from utils import load_documents_from_paths
 from sse_starlette.sse import EventSourceResponse
+from data import App
 
 logger = logging.getLogger(__name__)
+
+STREAM_DELAY = 1  # second
+RETRY_TIMEOUT = 15000  # milisecond
+
+dbpath = os.environ.get("DB_PATH", "data.fs")
+
+
+storage = FileStorage(dbpath)
+db = ZODB.DB(storage)
+connection = db.open()
+root = connection.root
+# __import__("pdb").set_trace()
+
+dbapp = getattr(root, "app", None)
+
+if dbapp is None:
+    root.app = App()
+    root.app._p_changed = True
+    transaction.commit()
+
 
 app = FastAPI()
 app.add_middleware(
@@ -56,8 +82,17 @@ def get_random_filename(filename: str) -> str:
     return f"{random_name}.{file_ext}"
 
 
-STREAM_DELAY = 1  # second
-RETRY_TIMEOUT = 15000  # milisecond
+@app.get("/getenv")
+def get_env():
+    s = root.app.settings
+
+    res = {
+        "titleText": s.titleText,
+        "placehold": s.placeholder,
+        "presetQuestions": list(s.presetQuestions),
+    }
+
+    return res
 
 
 @app.post("/files/")
@@ -69,7 +104,8 @@ async def create_file(request: Request):
 
     for value in formdata.values():
         if not (
-            isinstance(value, UploadFile) or isinstance(value, StarletteUploadFile)
+            isinstance(value, UploadFile) or isinstance(
+                value, StarletteUploadFile)
         ):
             logger.warn("Not valid file", value)
             continue
