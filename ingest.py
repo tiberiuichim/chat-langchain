@@ -8,7 +8,12 @@ from langchain.indexes import SQLRecordManager
 from langchain.vectorstores.weaviate import Weaviate
 
 from _index import index, Cleanup
-from utils import load_documents, split_documents
+from utils import (
+    load_documents,
+    split_documents,
+    split_documents_tiktoken
+)
+
 from chain import get_embeddings_model
 from constants import (
     WEAVIATE_DOCS_INDEX_NAME,
@@ -24,15 +29,14 @@ logger = logging.getLogger(__name__)
 
 def ingest_docs(documents, cleanup: Cleanup = "full"):
     logger.info(f"Loaded {len(documents)} from {DOCUMENTS_DIR}")
-    docs_transformed = split_documents(documents, tokenizer=None)
+#    docs_transformed = split_documents(documents, tokenizer=None)
+    docs_transformed = split_documents_tiktoken(documents)
 
     # We try to return 'source' and 'title' metadata when querying vector store and
     # Weaviate will error at query time if one of the attributes is missing from a
     # retrieved document.
-#    import pdb; pdb.set_trace()
     fallback_total_pages = len(docs_transformed)
     for idx, doc in enumerate(docs_transformed):
-#    for doc in docs_transformed:
         # __import__("pdb").set_trace()
         if "source" not in doc.metadata:
             doc.metadata["source"] = ""
@@ -46,7 +50,6 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
         title = doc.metadata["title"]
         page = doc.metadata.get("page", 0)
         total_pages = doc.metadata.get("total_pages", fallback_total_pages)
-#        total_pages = doc.metadata.get("total_pages", 0)
         doc.metadata["title"] = f"{title} - page {page}/{total_pages}"
 
     client = weaviate.Client(
