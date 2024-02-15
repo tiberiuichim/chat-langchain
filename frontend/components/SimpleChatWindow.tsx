@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { ChatMessageBubble } from "./ChatMessageBubble";
 import { Footer } from "./Footer";
-import { AutoResizeTextarea } from "./AutoResizeTextarea";
+import { AutoResizeTextarea } from "./ui/AutoResizeTextarea";
 
 import { useBackendChat } from "../lib/useBackendChat";
 

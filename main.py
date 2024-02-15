@@ -88,7 +88,7 @@ def get_env():
 
     res = {
         "titleText": s.titleText,
-        "placehold": s.placeholder,
+        "placeholder": s.placeholder,
         "presetQuestions": list(s.presetQuestions),
     }
 
