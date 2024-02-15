@@ -29,3 +29,7 @@ virtualenv .venv
 .venv/bin/pip install simsimd
 .venv/bin/pip install pymupdf
 .venv/bin/pip install python-multipart
+
+.venv/bin/pip install fastapi
+.venv/bin/pip install langchain_openai
+.venv/bin/pip install langchain_together

@@ -8,6 +8,7 @@ from langchain.docstore.document import Document
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 import os
 import logging
+import tiktoken
 # from pdfsplitter import get_pdf_splitter
 
 from constants import (
@@ -146,6 +147,20 @@ extension_handlers = {
     "tokenized": None,
 }
 
+def split_documents_tiktoken(documents: list[Document]) -> list[Document]:
+    chunk_size: int = 500
+    chunk_overlap: int = 0
+
+    texts = []
+    for doc in documents:
+        text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+            chunk_size=chunk_size, chunk_overlap=chunk_overlap
+        )
+
+        chunks = text_splitter.split_documents(documents)
+        texts.extend(chunks or [])
+
+    return texts
 
 def split_documents(documents: list[Document], tokenizer=None) -> list[Document]:
     # Splits documents for correct Text Splitter
