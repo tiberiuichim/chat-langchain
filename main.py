@@ -45,8 +45,10 @@ async def app_lifespan(app: FastAPI):
     dbapp = getattr(root, "app", None)
 
     if dbapp is None:
+        print("Recreate app")
         root.app = App()
         root.app._p_changed = True
+        root._p_changed = True
         transaction.commit()
 
     _local["dbapp"] = dbapp
