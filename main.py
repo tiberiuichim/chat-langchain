@@ -36,7 +36,7 @@ _local = {}
 
 
 @asynccontextmanager
-async def app_lifespan():
+async def app_lifespan(app: FastAPI):
     storage = FileStorage(dbpath)
     db = ZODB.DB(storage)
     connection = db.open()
