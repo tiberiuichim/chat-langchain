@@ -1581,16 +1581,6 @@ docs = ["Sphinx", "repoze.sphinx.autointerface", "sphinx_rtd_theme"]
 test = ["manuel", "zope.testrunner"]
 
 [[package]]
-name = "pickledb"
-version = "0.9.2"
-description = "A lightweight and simple database using json."
-optional = false
-python-versions = "*"
-files = [
-    {file = "pickleDB-0.9.2.tar.gz", hash = "sha256:ec6973e65d7d112849e78ce522840aa908efb2523470bb8ce5c7942310192240"},
-]
-
-[[package]]
 name = "platformdirs"
 version = "4.1.0"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
@@ -3120,4 +3110,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "764518549adde10661e7b03e2e5f4c10b90d0026b51b9e4a108783a4c145b39d"
+content-hash = "6bd000df6cd898540e17748413b9d6235cfdeeb994a771cd511c906c282e6320"
