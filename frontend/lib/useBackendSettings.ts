@@ -1,3 +1,5 @@
+"use client";
+
 import type { BackendSettings } from "@/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 

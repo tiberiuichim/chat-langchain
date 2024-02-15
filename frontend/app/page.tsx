@@ -1,7 +1,9 @@
+"use client";
+
 import { ChatWindow } from "@/components/SimpleChatWindow";
 import { useBackendSettings } from "@/lib/useBackendSettings";
 
-export default async function DefaultPage() {
+export default function DefaultPage() {
   const { query } = useBackendSettings();
   const { data } = query;
 

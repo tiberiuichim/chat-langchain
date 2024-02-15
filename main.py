@@ -101,6 +101,8 @@ def get_env():
         "presetQuestions": list(s.presetQuestions),
     }
 
+    print(res)
+
     return res
 
 
@@ -116,6 +118,7 @@ async def post_env(request: Request):
     # s.presetQuestions = data.presetQuestions
 
     s._p_changed = True
+    transaction.commit()
 
     res = {
         "titleText": s.titleText,
