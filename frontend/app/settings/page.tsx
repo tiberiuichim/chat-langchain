@@ -60,8 +60,10 @@ function SettingsForm({
     });
   }
 
+  console.log("mut", mutation);
+
   return (
-    <Form {...form} isLoading={mutation.isLoading}>
+    <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <TextFieldInput
           form={form}
@@ -85,7 +87,9 @@ function SettingsForm({
           description="These will be used for the question cards on the frontpage. One question per line"
           rows={4}
         />
-        <Button type="submit">Submit</Button>
+        <Button isLoading={mutation.isPending} type="submit">
+          Submit
+        </Button>
       </form>
     </Form>
   );
