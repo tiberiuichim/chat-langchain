@@ -6,7 +6,6 @@ import transaction
 from ZODB.FileStorage import FileStorage
 import ZODB
 
-# import pickledb
 import string
 import secrets
 import os
@@ -37,7 +36,7 @@ _local = {}
 
 
 @asynccontextmanager
-async def app_lifespan(app: FastAPI):
+async def app_lifespan():
     storage = FileStorage(dbpath)
     db = ZODB.DB(storage)
     connection = db.open()
