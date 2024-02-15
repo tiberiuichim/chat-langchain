@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const minMsg = "Needs to be at least 2 characters";
+import type { BackendSettings } from "@/types";
 
 const tolist = (s: string) =>
   s
@@ -26,16 +27,19 @@ const formSchema = z.object({
   presetQuestions: z.string().min(2, { message: minMsg }),
 });
 
-export default function SettingsPage() {
-  const { query, mutation } = useBackendSettings();
-  console.log(query);
-
+function SettingsForm({
+  data,
+  mutation,
+}: {
+  data: BackendSettings;
+  mutation: any;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      titleText: "",
-      placeholder: "",
-      presetQuestions: "",
+      titleText: data?.titleText || "",
+      placeholder: data?.placeholder || "",
+      presetQuestions: data?.presetQuestions?.join("\n") || "",
     },
   });
 
@@ -57,35 +61,44 @@ export default function SettingsPage() {
   }
 
   return (
+    <Form {...form} isLoading={mutation.isLoading}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <TextFieldInput
+          form={form}
+          id="titleText"
+          label="Site Title"
+          placeholder="EEA Chatbot"
+          description="Used on main page"
+        />
+        <TextFieldInput
+          form={form}
+          id="placeholder"
+          label="Chat input box placeholder"
+          placeholder="Ask a question"
+          description=""
+        />
+        <TextareaFieldInput
+          form={form}
+          id="presetQuestions"
+          label="Preset default questions"
+          placeholder="Tell me a joke"
+          description="These will be used for the question cards on the frontpage. One question per line"
+          rows={4}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
+  );
+}
+
+export default function SettingsPage() {
+  const { query, mutation } = useBackendSettings();
+  const { data } = query;
+
+  return (
     <div className={`rounded px-4 py-2 max-w-[80%] mb-8 flex`}>
       <section>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <TextFieldInput
-              form={form}
-              id="titleText"
-              label="Site Title"
-              placeholder="EEA Chatbot"
-              description="Used on main page"
-            />
-            <TextFieldInput
-              form={form}
-              id="placeholder"
-              label="Chat input box placeholder"
-              placeholder="Ask a question"
-              description=""
-            />
-            <TextareaFieldInput
-              form={form}
-              id="presetQuestions"
-              label="Preset default questions"
-              placeholder="Tell me a joke"
-              description="These will be used for the question cards on the frontpage. One question per line"
-              rows={4}
-            />
-            <Button type="submit">Submit</Button>
-          </form>
-        </Form>
+        {!!data && <SettingsForm data={data} mutation={mutation} />}
       </section>
     </div>
   );

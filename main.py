@@ -105,12 +105,15 @@ def get_env():
 
 
 @app.post("/settings")
-def post_env(data: Settings):
+async def post_env(request: Request):
+    data = await request.json()
     s = _local["dbapp"].settings
+    for k, v in data.items():
+        setattr(s, k, v)
 
-    s.titleText = data.titleText
-    s.placeholder = data.placeholder
-    s.presetQuestions = data.presetQuestions
+    # s.titleText = data.titleText
+    # s.placeholder = data.placeholder
+    # s.presetQuestions = data.presetQuestions
 
     s._p_changed = True
 

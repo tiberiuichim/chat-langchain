@@ -4,7 +4,6 @@ export const runtime = "nodejs";
 
 async function generic_handler(req: NextRequest) {
   const backend = `${process.env.API_URL}/settings`;
-  console.log("backend", backend);
   const response = await fetch(backend, req);
 
   if (!response.ok) {
