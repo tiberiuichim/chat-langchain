@@ -10,14 +10,14 @@ services:
     entrypoint: sh -c "tail -f /dev/null"
 
   frontend:
-    image: tiberiuichim/llm-chat-frontend:0.3
+    image: tiberiuichim/llm-chat-frontend:0.4
     build: ./frontend
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://test-gpu.pdmz.eea:8060
       API_URL: http://chat:8060
 
   chat:
-    image: tiberiuichim/llm-chat-backend:0.7
+    image: tiberiuichim/llm-chat-backend:0.8
     build: .
     environment:
       CONTAINER_PORT: '8080'
