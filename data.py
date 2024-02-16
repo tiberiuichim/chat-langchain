@@ -14,3 +14,4 @@ class Settings(Persistent):
         self.titleText = ""
         self.placeholder = ""
         self.presetQuestions = PersistentList()
+        self.frontmatter = ""

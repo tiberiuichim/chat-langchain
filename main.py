@@ -92,42 +92,33 @@ class Settings(BaseModel):
     presetQuestions: List[str]
 
 
+def serialize_settings(s):
+    res = {
+        "titleText": s.titleText or "",
+        "placeholder": s.placeholder or "",
+        "presetQuestions": list(s.presetQuestions) or [],
+        "frontmatter": s.frontmatter or "",
+    }
+    return res
+
+
 @app.get("/settings")
 def get_env():
-    s = _local["dbapp"].settings
-
-    res = {
-        "titleText": s.titleText,
-        "placeholder": s.placeholder,
-        "presetQuestions": list(s.presetQuestions),
-    }
-
-    print(res)
-
-    return res
+    return serialize_settings(_local["dbapp"].settings)
 
 
 @app.post("/settings")
 async def post_env(request: Request):
     data = await request.json()
     s = _local["dbapp"].settings
+
     for k, v in data.items():
         setattr(s, k, v)
-
-    # s.titleText = data.titleText
-    # s.placeholder = data.placeholder
-    # s.presetQuestions = data.presetQuestions
 
     s._p_changed = True
     transaction.commit()
 
-    res = {
-        "titleText": s.titleText,
-        "placeholder": s.placeholder,
-        "presetQuestions": list(s.presetQuestions),
-    }
-
-    return res
+    return serialize_settings(s)
 
 
 @app.post("/files/")
@@ -139,8 +130,7 @@ async def create_file(request: Request):
 
     for value in formdata.values():
         if not (
-            isinstance(value, UploadFile) or isinstance(
-                value, StarletteUploadFile)
+            isinstance(value, UploadFile) or isinstance(value, StarletteUploadFile)
         ):
             logger.warn("Not valid file", value)
             continue
