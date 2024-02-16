@@ -2,7 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { TextFieldInput, TextareaFieldInput } from "@/components/ui/formfields";
+import {
+  CheckboxFieldInput,
+  TextFieldInput,
+  TextareaFieldInput,
+} from "@/components/ui/formfields";
 import { toast } from "@/components/ui/use-toast";
 import { useBackendSettings } from "@/lib/useBackendSettings";
 
@@ -33,6 +37,7 @@ const formSchema = z.object({
   placeholder: z.string().min(2, { message: minMsg }),
   presetQuestions: z.string().min(2, { message: minMsg }),
   frontmatter: z.string().min(2, { message: minMsg }),
+  show_activities_dropdown: z.boolean().default(false).optional(),
 });
 
 function SettingsForm({
@@ -42,18 +47,20 @@ function SettingsForm({
   data: BackendSettings;
   mutation: any;
 }) {
+  const defaultValues = {
+    titleText: data?.titleText || "",
+    placeholder: data?.placeholder || "",
+    presetQuestions: data?.presetQuestions?.join("\n") || "",
+    frontmatter: data?.frontmatter || "",
+    show_activities_dropdown: data?.show_activities_dropdown || false,
+  };
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      titleText: data?.titleText || "",
-      placeholder: data?.placeholder || "",
-      presetQuestions: data?.presetQuestions?.join("\n") || "",
-      frontmatter: data?.frontmatter || "",
-    },
+    defaultValues,
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
     mutation.mutate({
       ...values,
       presetQuestions: tolist(values.presetQuestions),
@@ -68,8 +75,6 @@ function SettingsForm({
       ),
     });
   }
-
-  console.log("mut", mutation);
 
   return (
     <Form {...form}>
@@ -87,6 +92,13 @@ function SettingsForm({
           label="Chat input box placeholder"
           placeholder="Ask a question"
           description=""
+        />
+        <CheckboxFieldInput
+          form={form}
+          id="show_activities_dropdown"
+          label="Show navigation dropdown"
+          placeholder=""
+          description="If enabled, will show a navigation dropdown on the frontpage"
         />
         <TextareaFieldInput
           form={form}

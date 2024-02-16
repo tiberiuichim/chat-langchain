@@ -76,10 +76,30 @@ export const TextareaFieldInput: React.FC<TextareaFieldInputProps> = (
   </FormFieldWrapper>
 );
 
-export const CheckboxFieldInput: React.FC<FormFieldProps> = (props) => (
-  <FormFieldWrapper {...props}>
-    {({ field }) => (
-      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+export const CheckboxFieldInput: React.FC<FormFieldProps> = ({
+  id,
+  form,
+  label,
+  description,
+}) => (
+  <FormField
+    control={form.control}
+    name={id}
+    render={({ field }) => (
+      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+        <FormControl>
+          <Checkbox
+            checked={field.value}
+            onCheckedChange={(v) => {
+              field.onChange(v);
+            }}
+          />
+        </FormControl>
+        <div className="space-y-1 leading-none">
+          <FormLabel>{label}</FormLabel>
+          <FormDescription>{description}</FormDescription>
+        </div>
+      </FormItem>
     )}
-  </FormFieldWrapper>
+  />
 );
