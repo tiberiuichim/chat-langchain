@@ -1,17 +1,30 @@
+"use client";
+
+import { Loader2 } from "lucide-react";
 import { ChatWindow } from "@/components/SimpleChatWindow";
+import { useBackendSettings } from "@/lib/useBackendSettings";
 
 export default function DefaultPage() {
-  return (
+  const { query } = useBackendSettings();
+  const { data } = query;
+
+  // const titleText = "Ask me anything about (some) EEA documents!";
+  // const placeholder = "Ask a question. Enter multiple lines with Shift+Enter";
+  // const presetQuestions = [
+  //   "How many heat pumps were sold?",
+  //   "What is the LULUCF sector?",
+  //   "How much did the industrial sector contribute to total gas emissions?",
+  //   "What is the plan to tackle greenhouse emissions?",
+  // ];
+
+  return data ? (
     <ChatWindow
       endpoint="/chat/stream_log"
-      titleText="Ask me anything about (some) EEA documents!"
-      placeholder="Ask a question. Enter multiple lines with Shift+Enter"
-      presetQuestions={[
-        "How many heat pumps were sold?",
-        "What is the LULUCF sector?",
-        "How much did the industrial sector contribute to total gas emissions?",
-        "What is the plan to tackle greenhouse emissions?",
-      ]}
+      titleText={data?.titleText || ""}
+      placeholder={data?.placeholder || ""}
+      presetQuestions={data?.presetQuestions || []}
     />
+  ) : (
+    <Loader2 />
   );
 }

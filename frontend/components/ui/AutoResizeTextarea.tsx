@@ -1,23 +1,19 @@
 import React, { ReactElement } from "react";
-import { Textarea } from "./ui/textarea";
-import type { TextareaProps } from "./ui/textarea";
+// import { Textarea } from "./textarea";
+// import type { TextareaProps } from "./textarea";
 
-// import ResizeTextarea from "react-textarea-autosize";
-// interface ResizeTextareaProps {
-//   maxRows?: number;
-// }
+import ResizeTextarea from "react-textarea-autosize";
+import { cn } from "@/lib/utils";
 
-// const ResizableTextarea: React.FC<ResizeTextareaProps> = ({
-//   maxRows,
-//   ...props
-// }) => {
-//   return <ResizeTextarea maxRows={maxRows} {...props} />;
-// };
+export interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
-// minH="unset"
-// overflow="auto"
-// w="100%"
-// resize="none"
+const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, ...props }, ref) => {
+    return <ResizeTextarea className={cn(className)} ref={ref} {...props} />;
+  },
+);
+Textarea.displayName = "Textarea";
 
 interface AutoResizeTextareaProps extends TextareaProps {
   maxRows?: number;
@@ -42,3 +38,5 @@ export const AutoResizeTextarea = React.forwardRef<
 });
 
 AutoResizeTextarea.displayName = "AutoResizeTextarea";
+
+// export { Textarea };

@@ -36,18 +36,19 @@ const Grid = (props: { children: React.JSX.Element[] }) => {
 export function EmptyState(props: {
   questions: string[];
   onChoice: (question: string) => void;
+  titleText: string;
 }) {
   const handleClick = (e: React.SyntheticEvent) => {
     props.onChoice((e.target as HTMLDivElement).innerText);
   };
-  const { questions } = props;
+  const { questions, titleText } = props;
   return (
     <div className="rounded flex flex-col items-center max-w-full md:p-8">
       <div className="mb-10">
         <Tasks />
       </div>
 
-      <div className="text-3xl text-black">Chat with (some) EEA documents</div>
+      <div className="text-3xl text-black">{titleText}</div>
       <div className="text-md text-black mt-2">
         Try one of the questions bellow
       </div>

@@ -28,6 +28,7 @@ python-dotenv = "^1.0.0"
 python-multipart = "^0.0.6"
 unstructured = {extras = ["all"], version = "^0.12.2"}
 pymupdf = "^1.23.16"
+zodb = "^5.8.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.9.1"
