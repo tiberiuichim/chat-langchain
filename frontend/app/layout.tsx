@@ -3,6 +3,7 @@
 import "./globals.css";
 
 import React from "react";
+import { Toaster } from "@/components/ui/toaster";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Public_Sans } from "next/font/google";
@@ -44,6 +45,7 @@ export default function RootLayout({
             <ReactQueryDevtools initialIsOpen={false} />
           </QueryClientProvider>
         </div>
+        <Toaster />
       </body>
     </html>
   );

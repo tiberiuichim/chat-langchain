@@ -7,7 +7,7 @@ const queryKey = "backendSettings";
 const url = `/api/settings`;
 
 const postData = async (data: BackendSettings) => {
-  console.log("postData", data);
+  // console.log("postData", data);
   return await fetch(url, { method: "post", body: JSON.stringify(data) });
 };
 
