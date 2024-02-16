@@ -14,14 +14,23 @@ import { useBackendChat } from "../lib/useBackendChat";
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
 
-export function ChatWindow(props: {
+type ChatWindowProps = {
   placeholder?: string;
   titleText: string;
   presetQuestions: string[];
   endpoint: string;
   frontmatter: string;
-}) {
-  const { placeholder, presetQuestions, endpoint, frontmatter } = props;
+  show_activities_dropdown: boolean;
+};
+
+export function ChatWindow(props: ChatWindowProps) {
+  const {
+    placeholder,
+    presetQuestions,
+    endpoint,
+    frontmatter,
+    show_activities_dropdown,
+  } = props;
 
   const { sendMessage, input, setInput, messages, isLoading } = useBackendChat({
     endpoint,
@@ -53,6 +62,7 @@ export function ChatWindow(props: {
             onChoice={sendMessage}
             questions={presetQuestions}
             frontmatter={frontmatter}
+            show_activities_dropdown={show_activities_dropdown}
           />
         )}
       </div>

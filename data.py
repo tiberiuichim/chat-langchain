@@ -15,3 +15,4 @@ class Settings(Persistent):
         self.placeholder = ""
         self.presetQuestions = PersistentList()
         self.frontmatter = ""
+        self.show_activities_dropdown = True

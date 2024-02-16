@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "./textarea";
+import { Checkbox } from "./checkbox";
+import type { Control, FieldValues } from "react-hook-form";
 
-type TextFieldInputProps = {
+type InputFieldProps = {
   id: string;
   label: string;
   description: React.ReactNode;
@@ -18,55 +20,66 @@ type TextFieldInputProps = {
   placeholder: string;
 };
 
+type FormFieldProps = InputFieldProps & {
+  form: {
+    control: Control;
+  };
+  children: ({ field }: { field: FieldValues }) => React.ReactNode;
+};
+
 type TextareaFieldInputProps = {
   rows: number;
-} & TextFieldInputProps;
+} & FormFieldProps;
 
-export const TextFieldInput: React.FC<TextFieldInputProps> = ({
+export const FormFieldWrapper: React.FC<FormFieldProps> = ({
   id,
   label,
   description,
   form,
-  placeholder,
-}) => (
-  <FormField
-    control={form.control}
-    name={id}
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>
-          <Input placeholder={placeholder} {...field} />
-        </FormControl>
-        <FormDescription>{description}</FormDescription>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
+  children,
+}) => {
+  return (
+    <FormField
+      control={form.control}
+      name={id}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{label}</FormLabel>
+          <FormControl>{children({ field })}</FormControl>
+          <FormDescription>{description}</FormDescription>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
+
+export const TextFieldInput: React.FC<FormFieldProps> = (props) => (
+  <FormFieldWrapper {...props}>
+    {({ field }) => <Input placeholder={props.placeholder} {...field} />}
+  </FormFieldWrapper>
 );
 
-export const TextareaFieldInput: React.FC<TextareaFieldInputProps> = ({
-  id,
-  label,
-  description,
-  form,
-  placeholder,
-  ...rest
-}) => (
-  <FormField
-    control={form.control}
-    name={id}
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>
-          <div className="grid w-full gap-2">
-            <Textarea placeholder={placeholder} {...field} {...rest} />
-          </div>
-        </FormControl>
-        <FormDescription>{description}</FormDescription>
-        <FormMessage />
-      </FormItem>
+export const TextareaFieldInput: React.FC<TextareaFieldInputProps> = (
+  props,
+) => (
+  <FormFieldWrapper {...props}>
+    {({ field }) => (
+      <div className="grid w-full gap-2">
+        <Textarea
+          placeholder={props.placeholder}
+          rows={props.rows}
+          {...field}
+        />
+      </div>
     )}
-  />
+  </FormFieldWrapper>
+);
+
+export const CheckboxFieldInput: React.FC<FormFieldProps> = (props) => (
+  <FormFieldWrapper {...props}>
+    {({ field }) => (
+      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+    )}
+  </FormFieldWrapper>
 );

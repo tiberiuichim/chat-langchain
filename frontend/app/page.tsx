@@ -31,6 +31,7 @@ export default function DefaultPage() {
       placeholder={data?.placeholder || ""}
       presetQuestions={data?.presetQuestions || []}
       frontmatter={data?.frontmatter || frontmatter}
+      show_activities_dropdown={data?.show_activities_dropdown || false}
     />
   ) : (
     <Loader2 />

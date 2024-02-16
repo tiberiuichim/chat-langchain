@@ -1,29 +1,29 @@
 """Main entrypoint for the app."""
 
-from contextlib import asynccontextmanager
-from typing import List
-import transaction
-from ZODB.FileStorage import FileStorage
-import ZODB
-
-import string
-import secrets
-import os
-import shutil
 import logging
+import os
+import secrets
+import shutil
+import string
+from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, UploadFile, Request  # File,
-from starlette.datastructures import UploadFile as StarletteUploadFile
+import transaction
+import ZODB
+from fastapi import FastAPI, Request, UploadFile  # File,
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
+from sse_starlette.sse import EventSourceResponse
+from starlette.datastructures import UploadFile as StarletteUploadFile
+from ZODB.FileStorage import FileStorage
 
 from chain import ChatRequest, answer_chain
 from constants import DOCUMENTS_DIR
+from data import App
 from ingest import ingest_docs
 from utils import load_documents_from_paths
-from sse_starlette.sse import EventSourceResponse
-from data import App
-from pydantic import BaseModel
+
+# from pydantic import BaseModel
+# from typing import List
 
 logger = logging.getLogger(__name__)
 
@@ -86,10 +86,10 @@ def get_random_filename(filename: str) -> str:
     return f"{random_name}.{file_ext}"
 
 
-class Settings(BaseModel):
-    titleText: str
-    placeholder: str
-    presetQuestions: List[str]
+# class Settings(BaseModel):
+#     titleText: str
+#     placeholder: str
+#     presetQuestions: List[str]
 
 
 def serialize_settings(s):
@@ -97,7 +97,8 @@ def serialize_settings(s):
         "titleText": s.titleText or "",
         "placeholder": s.placeholder or "",
         "presetQuestions": list(s.presetQuestions) or [],
-        "frontmatter": s.frontmatter or "",
+        "frontmatter": getattr(s, "frontmatter", ""),
+        "show_activities_dropdown": getattr(s, "show_activities_dropdown", False),
     }
     return res
 
