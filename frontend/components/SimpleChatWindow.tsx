@@ -19,8 +19,9 @@ export function ChatWindow(props: {
   titleText: string;
   presetQuestions: string[];
   endpoint: string;
+  frontmatter: string;
 }) {
-  const { placeholder, presetQuestions, endpoint, titleText } = props;
+  const { placeholder, presetQuestions, endpoint, frontmatter } = props;
 
   const { sendMessage, input, setInput, messages, isLoading } = useBackendChat({
     endpoint,
@@ -51,7 +52,7 @@ export function ChatWindow(props: {
           <EmptyState
             onChoice={sendMessage}
             questions={presetQuestions}
-            titleText={titleText}
+            frontmatter={frontmatter}
           />
         )}
       </div>

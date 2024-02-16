@@ -13,6 +13,13 @@ import { z } from "zod";
 const minMsg = "Needs to be at least 2 characters";
 import type { BackendSettings } from "@/types";
 
+const frontmatter = `
+<div className="text-3xl text-black">Chat with EEA reports</div>
+<div className="text-md text-black mt-2">
+  Try one of the questions bellow
+</div>
+`;
+
 const tolist = (s: string) =>
   s
     .trim()
@@ -25,6 +32,7 @@ const formSchema = z.object({
   }),
   placeholder: z.string().min(2, { message: minMsg }),
   presetQuestions: z.string().min(2, { message: minMsg }),
+  frontmatter: z.string().min(2, { message: minMsg }),
 });
 
 function SettingsForm({
@@ -40,6 +48,7 @@ function SettingsForm({
       titleText: data?.titleText || "",
       placeholder: data?.placeholder || "",
       presetQuestions: data?.presetQuestions?.join("\n") || "",
+      frontmatter: data?.frontmatter || "",
     },
   });
 
@@ -78,6 +87,19 @@ function SettingsForm({
           label="Chat input box placeholder"
           placeholder="Ask a question"
           description=""
+        />
+        <TextareaFieldInput
+          form={form}
+          id="frontmatter"
+          label="Frontmatter"
+          placeholder={frontmatter.trim()}
+          description=<>
+            The frontmatter. HTML code. You need to use{" "}
+            <a className="font-bold" href="https://tailwindcss.com/">
+              Tailwindcss classes
+            </a>
+          </>
+          rows={4}
         />
         <TextareaFieldInput
           form={form}

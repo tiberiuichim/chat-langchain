@@ -13,7 +13,7 @@ import { Textarea } from "./textarea";
 type TextFieldInputProps = {
   id: string;
   label: string;
-  description: string;
+  description: React.ReactNode;
   form: unknown;
   placeholder: string;
 };
