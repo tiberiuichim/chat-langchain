@@ -18,8 +18,8 @@ const minMsg = "Needs to be at least 2 characters";
 import type { BackendSettings } from "@/types";
 
 const frontmatter = `
-<div className="text-3xl text-black">Chat with EEA reports</div>
-<div className="text-md text-black mt-2">
+<div class="text-3xl text-black">Chat with EEA reports</div>
+<div class="text-md text-black mt-2">
   Try one of the questions bellow
 </div>
 `;
