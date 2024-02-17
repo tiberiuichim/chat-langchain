@@ -11,7 +11,8 @@ from _index import index, Cleanup
 from utils import (
     load_documents,
     split_documents,
-    split_documents_tiktoken
+    split_documents_tiktoken,
+    split_documents_danswer,
 )
 
 from chain import get_embeddings_model
@@ -29,8 +30,10 @@ logger = logging.getLogger(__name__)
 
 def ingest_docs(documents, cleanup: Cleanup = "full"):
     logger.info(f"Loaded {len(documents)} from {DOCUMENTS_DIR}")
-    docs_transformed = split_documents(documents, tokenizer=None)
+#    docs_transformed = split_documents(documents, tokenizer=None)
 #    docs_transformed = split_documents_tiktoken(documents)
+    docs_transformed = split_documents_danswer(documents)
+    import pdb; pdb.set_trace()
 
     # We try to return 'source' and 'title' metadata when querying vector store and
     # Weaviate will error at query time if one of the attributes is missing from a

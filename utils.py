@@ -9,6 +9,7 @@ from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_compl
 import os
 import logging
 import tiktoken
+from chunker import Chunker
 # from pdfsplitter import get_pdf_splitter
 
 from constants import (
@@ -195,5 +196,14 @@ def split_documents(documents: list[Document], tokenizer=None) -> list[Document]
                 __import__("pdb").set_trace()
 
             texts.extend(chunks or [])
+
+    return texts
+
+def split_documents_danswer(documents: list[Document]) ->list[Document]:
+    texts = []
+    chunker = Chunker()
+    for doc in documents:
+        chunks = chunker.chunk(document = doc)
+        texts.extend(chunks or [])
 
     return texts

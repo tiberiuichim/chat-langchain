@@ -33,3 +33,4 @@ virtualenv .venv
 .venv/bin/pip install fastapi
 .venv/bin/pip install langchain_openai
 .venv/bin/pip install langchain_together
+.venv/bin/pip install llama_index
