@@ -4,7 +4,6 @@ from typing import Dict, List, Optional, Sequence
 import weaviate
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain.schema import Document
 from langchain.schema.embeddings import Embeddings
@@ -19,28 +18,27 @@ from langchain.schema.runnable import (
     RunnableMap,
 )
 from langchain.vectorstores.weaviate import Weaviate
+from langchain_openai import ChatOpenAI
+from langchain_together.embeddings import TogetherEmbeddings
 from pydantic.v1 import BaseModel
 
-from langchain_openai import OpenAIEmbeddings
-from langchain_openai import ChatOpenAI
+from constants import (
+    EMBEDDING_MODEL_NAME,
+    OPENAI_API_BASE,
+    OPENAI_API_KEY,
+    OPENAI_LLM_MODEL,
+    REPHRASE_TEMPLATE,
+    RESPONSE_TEMPLATE,
+    RETRIEVER_K,
+    WEAVIATE_API_KEY,
+    WEAVIATE_DOCS_INDEX_NAME,
+    WEAVIATE_URL,
+)
 
+# from langchain_openai import OpenAIEmbeddings
 # from langchain_community.embeddings import OpenAIEmbeddings
 # from langchain_community.chat_models import ChatOpenAI
 # from langchain_community.embeddings import HuggingFaceInstructEmbeddings
-from langchain_together.embeddings import TogetherEmbeddings
-
-from constants import (
-    OPENAI_API_KEY,
-    OPENAI_API_BASE,
-    OPENAI_LLM_MODEL,
-    WEAVIATE_DOCS_INDEX_NAME,
-    EMBEDDING_MODEL_NAME,
-    WEAVIATE_URL,
-    WEAVIATE_API_KEY,
-    RESPONSE_TEMPLATE,
-    REPHRASE_TEMPLATE,
-    RETRIEVER_K,
-)
 
 app = FastAPI()
 app.add_middleware(
@@ -108,7 +106,8 @@ def create_retriever_chain(
             RunnableLambda(lambda x: bool(x.get("chat_history"))).with_config(
                 run_name="HasChatHistoryCheck"
             ),
-            conversation_chain.with_config(run_name="RetrievalChainWithHistory"),
+            conversation_chain.with_config(
+                run_name="RetrievalChainWithHistory"),
         ),
         (
             RunnableLambda(itemgetter("question")).with_config(
@@ -133,7 +132,8 @@ def serialize_history(request: ChatRequest):
 
     for message in chat_history:
         if message.get("human") is not None:
-            converted_chat_history.append(HumanMessage(content=message["human"]))
+            converted_chat_history.append(
+                HumanMessage(content=message["human"]))
         if message.get("ai") is not None:
             converted_chat_history.append(AIMessage(content=message["ai"]))
 

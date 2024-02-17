@@ -7,29 +7,30 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { ChatMessageBubble } from "./ChatMessageBubble";
 import { Footer } from "./Footer";
-import { AutoResizeTextarea } from "./AutoResizeTextarea";
+import { AutoResizeTextarea } from "./ui/AutoResizeTextarea";
 
 import { useBackendChat } from "../lib/useBackendChat";
 
 import "highlight.js/styles/gradient-dark.css";
 import "react-toastify/dist/ReactToastify.css";
 
-// {messages.length > 0 && (
-//   <div className="flex flex-col items-center py-8">
-//     <div className="text-2xl font-medium text-slate-800">{titleText}</div>
-//     <div className="text-xl font-medium text-slate-800">
-//       Note: chat results may not be acurate
-//     </div>
-//   </div>
-// )}
-
-export function ChatWindow(props: {
+type ChatWindowProps = {
   placeholder?: string;
-  titleText?: string;
+  titleText: string;
   presetQuestions: string[];
   endpoint: string;
-}) {
-  const { placeholder, presetQuestions, endpoint } = props;
+  frontmatter: string;
+  show_activities_dropdown: boolean;
+};
+
+export function ChatWindow(props: ChatWindowProps) {
+  const {
+    placeholder,
+    presetQuestions,
+    endpoint,
+    frontmatter,
+    show_activities_dropdown,
+  } = props;
 
   const { sendMessage, input, setInput, messages, isLoading } = useBackendChat({
     endpoint,
@@ -57,7 +58,12 @@ export function ChatWindow(props: {
               />
             ))
         ) : (
-          <EmptyState onChoice={sendMessage} questions={presetQuestions} />
+          <EmptyState
+            onChoice={sendMessage}
+            questions={presetQuestions}
+            frontmatter={frontmatter}
+            show_activities_dropdown={show_activities_dropdown}
+          />
         )}
       </div>
       <div className="flex w-full space-x-4">

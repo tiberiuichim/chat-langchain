@@ -10,27 +10,42 @@ services:
     entrypoint: sh -c "tail -f /dev/null"
 
   frontend:
-    image: tiberiuichim/llm-chat-frontend:0.3
+    image: tiberiuichim/llm-chat-frontend:0.4
     build: ./frontend
     environment:
       NEXT_PUBLIC_API_BASE_URL: http://test-gpu.pdmz.eea:8060
       API_URL: http://chat:8060
 
   chat:
-    image: tiberiuichim/llm-chat-backend:0.3
+    image: tiberiuichim/llm-chat-backend:0.8
     build: .
     environment:
-      CONTAINER_PORT: 8060
-      NVIDIA_VISIBLE_DEVICES: all
+      CONTAINER_PORT: '8080'
+      DOCUMENTS_DIR: /data/documents
+      EMBEDDING_MODEL_NAME: togethercomputer/m2-bert-80M-8k-retrieval
       NVIDIA_DRIVER_CAPABILITIES: all
+      NVIDIA_VISIBLE_DEVICES: all
+      OPENAI_API_BASE: https://api.together.xyz
+      OPENAI_LLM_MODEL: mistralai/Mistral-7B-Instruct-v0.2
+      OPENBLAS_NUM_THREADS: '1'
+      RECORD_MANAGER_DB_URL: sqlite:///data/indexing-status.db
+      REPHRASE_TEMPLATE: /rephrase_template.txt
+      RESPONSE_TEMPLATE: /response_template_2.txt
+      RETRIEVER_K: '4'
+      SPLITTER_CHUNK_OVERLAP: '200'
+      SPLITTER_CHUNK_SIZE: '4000'
+      WEAVIATE_API_KEY: ''
+      WEAVIATE_DOCS_INDEX_NAME: LangChain_agent_docs_4
       WEAVIATE_URL: http://weaviate:8090
-    command: /home/app/.local/bin/uvicorn main:app --host 0.0.0.0 --port=8060
+    #command: /home/app/.local/bin/uvicorn main:app --host 0.0.0.0 --port=8060
+    #entrypoint: sh -c "tail -f /dev/null"
     env_file:
       - ./.env.example
       - ./.env
     volumes:
-      - ./data:/home/app/chat/data
-      - cache:/home/app/.cache
+      - ./data:/data
+      # - ./data:/home/app/chat/data
+      # - cache:/home/app/.cache
     deploy:
       resources:
         reservations:

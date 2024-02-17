@@ -1,25 +1,64 @@
 """Main entrypoint for the app."""
 
-import string
-import secrets
-import os
-import shutil
 import logging
+import os
+import secrets
+import shutil
+import string
+from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, UploadFile, Request  # File,
-from starlette.datastructures import UploadFile as StarletteUploadFile
+import transaction
+import ZODB
+from fastapi import FastAPI, Request, UploadFile  # File,
 from fastapi.middleware.cors import CORSMiddleware
 from langserve import add_routes
+from sse_starlette.sse import EventSourceResponse
+from starlette.datastructures import UploadFile as StarletteUploadFile
+from ZODB.FileStorage import FileStorage
 
 from chain import ChatRequest, answer_chain
 from constants import DOCUMENTS_DIR
+from data import App
 from ingest import ingest_docs
 from utils import load_documents_from_paths
-from sse_starlette.sse import EventSourceResponse
+
+# from pydantic import BaseModel
+# from typing import List
 
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+STREAM_DELAY = 1  # second
+RETRY_TIMEOUT = 15000  # milisecond
+
+dbpath = os.environ.get("DB_PATH", "data.fs")
+
+_local = {}
+
+
+@asynccontextmanager
+async def app_lifespan(app: FastAPI):
+    storage = FileStorage(dbpath)
+    db = ZODB.DB(storage)
+    connection = db.open()
+    root = connection.root
+
+    dbapp = getattr(root, "app", None)
+
+    if dbapp is None:
+        dbapp = App()
+        root.app = dbapp
+        root.app._p_changed = True
+        root._p_changed = True
+        transaction.commit()
+
+    _local["dbapp"] = dbapp
+
+    yield
+
+    db.close()
+
+
+app = FastAPI(lifespan=app_lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -39,15 +78,6 @@ add_routes(
 )
 
 
-# add_routes(
-#     # input_type=ChatRequest, config_keys=["metadata"]
-#     app,
-#     answer_chain.with_types(input_type=ChatRequest),
-#     config_keys=["metadata"],
-#     path="/chat",
-# )
-
-
 def get_random_filename(filename: str) -> str:
     file_ext = filename.split(".")[-1]
     random_name = "".join(
@@ -56,8 +86,40 @@ def get_random_filename(filename: str) -> str:
     return f"{random_name}.{file_ext}"
 
 
-STREAM_DELAY = 1  # second
-RETRY_TIMEOUT = 15000  # milisecond
+# class Settings(BaseModel):
+#     titleText: str
+#     placeholder: str
+#     presetQuestions: List[str]
+
+
+def serialize_settings(s):
+    res = {
+        "titleText": s.titleText or "",
+        "placeholder": s.placeholder or "",
+        "presetQuestions": list(s.presetQuestions) or [],
+        "frontmatter": getattr(s, "frontmatter", ""),
+        "show_activities_dropdown": getattr(s, "show_activities_dropdown", False),
+    }
+    return res
+
+
+@app.get("/settings")
+def get_env():
+    return serialize_settings(_local["dbapp"].settings)
+
+
+@app.post("/settings")
+async def post_env(request: Request):
+    data = await request.json()
+    s = _local["dbapp"].settings
+
+    for k, v in data.items():
+        setattr(s, k, v)
+
+    s._p_changed = True
+    transaction.commit()
+
+    return serialize_settings(s)
 
 
 @app.post("/files/")

@@ -33,24 +33,33 @@ const Grid = (props: { children: React.JSX.Element[] }) => {
   );
 };
 
-export function EmptyState(props: {
+type EmptyStateProps = {
   questions: string[];
   onChoice: (question: string) => void;
-}) {
+  frontmatter: string;
+  show_activities_dropdown: boolean;
+  // titleText: string;
+};
+
+export function EmptyState(props: EmptyStateProps) {
+  const { questions, frontmatter, show_activities_dropdown } = props;
+
   const handleClick = (e: React.SyntheticEvent) => {
     props.onChoice((e.target as HTMLDivElement).innerText);
   };
-  const { questions } = props;
+
   return (
     <div className="rounded flex flex-col items-center max-w-full md:p-8">
-      <div className="mb-10">
-        <Tasks />
-      </div>
+      {!!show_activities_dropdown && (
+        <div className="mb-10">
+          <Tasks />
+        </div>
+      )}
 
-      <div className="text-3xl text-black">Chat with (some) EEA documents</div>
-      <div className="text-md text-black mt-2">
-        Try one of the questions bellow
-      </div>
+      <div
+        className="frontmatter"
+        dangerouslySetInnerHTML={{ __html: frontmatter }}
+      />
       <Grid>
         <QuestionCard
           question={questions[0]}
