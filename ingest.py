@@ -79,10 +79,10 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
     embedding = get_embeddings_model()
 
     parent_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-        chunk_size=1000, chunk_overlap=0
+        chunk_size=10000, chunk_overlap=0
     )
     child_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-        chunk_size=100, chunk_overlap=0
+        chunk_size=400, chunk_overlap=0
     )
     # SemanticChunker(embedding)
 
