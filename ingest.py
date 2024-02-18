@@ -1,5 +1,6 @@
 """Load html from files, clean up, split, ingest into Weaviate."""
 
+import json
 import logging
 import os
 import uuid
@@ -51,6 +52,7 @@ def derive_documents(docs, parent_splitter, child_splitter):
     docs = []
     full_docs = []
     for i, doc in enumerate(documents):
+        # print("Process", doc)
         _id = doc_ids[i]
         sub_docs = child_splitter.split_documents([doc])
         for _doc in sub_docs:
@@ -79,10 +81,10 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
     parent_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
         chunk_size=1000, chunk_overlap=0
     )
-    child_splitter = SemanticChunker(embedding)
-    # RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-    #     chunk_size=100, chunk_overlap=0
-    # )
+    child_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        chunk_size=100, chunk_overlap=0
+    )
+    # SemanticChunker(embedding)
 
     docs_to_index, docs_to_store = derive_documents(
         documents, parent_splitter, child_splitter
@@ -90,7 +92,10 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
 
     # TODO: take care of dedupe in file_store
     file_store = LocalFileStore(LOCAL_FILE_STORE)
-    file_store.mset(docs_to_store)
+    file_store.mset(
+        (docid, json.dumps(doc.to_json()).encode("utf-8"))
+        for (docid, doc) in docs_to_store
+    )
 
     client = weaviate.Client(
         url=WEAVIATE_URL,
