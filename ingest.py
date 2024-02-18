@@ -1,5 +1,7 @@
 """Load html from files, clean up, split, ingest into Weaviate."""
 
+from copy import deepcopy
+import uuid
 import logging
 import os
 
@@ -7,6 +9,11 @@ import weaviate
 from langchain.indexes import SQLRecordManager
 from langchain.vectorstores.weaviate import Weaviate
 from langchain_experimental.text_splitter import SemanticChunker
+from langchain.text_splitter import (
+    # CharacterTextSplitter,
+    # Language,
+    RecursiveCharacterTextSplitter,
+)
 
 from _index import Cleanup, index
 from chain import get_embeddings_model
@@ -24,7 +31,6 @@ logger = logging.getLogger(__name__)
 
 # chunk_size: int = 400
 # chunk_overlap: int = 0
-# file_store = LocalFileStore(LOCAL_FILE_STORE)
 # child_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
 #     chunk_size=chunk_size, chunk_overlap=chunk_overlap
 # )
@@ -37,8 +43,27 @@ logger = logging.getLogger(__name__)
 # retriever.add_documents(docs, ids=None)
 
 
-def derive_documents(doc, parent_splitter, child_splitter):
-    pass
+def derive_documents(docs, parent_splitter, child_splitter):
+    # inspired ParentDocumentRetriever.add_documents
+    id_key = "doc_id"
+    documents = parent_splitter.split_documents(docs)
+    doc_ids = [str(uuid.uuid4()) for _ in documents]
+
+    docs = []
+    full_docs = []
+    for i, doc in enumerate(documents):
+        _id = doc_ids[i]
+        sub_docs = child_splitter.split_documents([doc])
+        for _doc in sub_docs:
+            _doc.metadata = deepcopy(doc.metadata)
+            _doc.metadata[id_key] = _id
+        docs.extend(sub_docs)
+        full_docs.append((_id, doc))
+
+    # docs will be indexed in the vector database, as they're short
+    # full_docs will be indexed in the document store, as they're the source
+    # to be retrieved with the ParentDocumentRetriever
+    return docs, full_docs
 
 
 def ingest_docs(documents, cleanup: Cleanup = "full"):
@@ -60,7 +85,11 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
     #     chunk_size=100, chunk_overlap=0
     # )
 
-    documents = derive_documents(documents, parent_splitter)
+    docs_to_index, docs_to_store = derive_documents(
+        documents, parent_splitter, child_splitter
+    )
+
+    # file_store = LocalFileStore(LOCAL_FILE_STORE)
 
     client = weaviate.Client(
         url=WEAVIATE_URL,
