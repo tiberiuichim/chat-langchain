@@ -1,19 +1,16 @@
 """Load html from files, clean up, split, ingest into Weaviate."""
 
-from copy import deepcopy
-import uuid
 import logging
 import os
+import uuid
+from copy import deepcopy
 
 import weaviate
 from langchain.indexes import SQLRecordManager
+from langchain.storage import LocalFileStore
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores.weaviate import Weaviate
 from langchain_experimental.text_splitter import SemanticChunker
-from langchain.text_splitter import (
-    # CharacterTextSplitter,
-    # Language,
-    RecursiveCharacterTextSplitter,
-)
 
 from _index import Cleanup, index
 from chain import get_embeddings_model
@@ -23,8 +20,10 @@ from constants import (
     WEAVIATE_API_KEY,
     WEAVIATE_DOCS_INDEX_NAME,
     WEAVIATE_URL,
+    LOCAL_FILE_STORE,
 )
-from utils import load_documents, split_documents, split_documents_tiktoken
+
+from utils import load_documents  # , split_documents, split_documents_tiktoken
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -67,7 +66,7 @@ def derive_documents(docs, parent_splitter, child_splitter):
 
 
 def ingest_docs(documents, cleanup: Cleanup = "full"):
-    for idx, doc in enumerate(documents):
+    for doc in documents:
         if "source" not in doc.metadata:
             doc.metadata["source"] = ""
         if "title" not in doc.metadata:
@@ -89,7 +88,9 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
         documents, parent_splitter, child_splitter
     )
 
-    # file_store = LocalFileStore(LOCAL_FILE_STORE)
+    # TODO: take care of dedupe in file_store
+    file_store = LocalFileStore(LOCAL_FILE_STORE)
+    file_store.mset(docs_to_store)
 
     client = weaviate.Client(
         url=WEAVIATE_URL,
@@ -111,7 +112,7 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
     force_update = (os.environ.get("FORCE_UPDATE") or "false").lower() == "true"
 
     indexing_stats = index(
-        documents,
+        docs_to_index,
         record_manager,
         vectorstore,
         cleanup=cleanup,
