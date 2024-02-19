@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Sequence
 import weaviate
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from langchain.load import loads
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder, PromptTemplate
 from langchain.schema import Document
 from langchain.schema.embeddings import Embeddings
@@ -17,6 +18,7 @@ from langchain.schema.runnable import (
     RunnableLambda,
     RunnableMap,
 )
+from langchain.storage import LocalFileStore
 from langchain.vectorstores.weaviate import Weaviate
 from langchain_openai import ChatOpenAI
 from langchain_together.embeddings import TogetherEmbeddings
@@ -24,6 +26,7 @@ from pydantic.v1 import BaseModel
 
 from constants import (
     EMBEDDING_MODEL_NAME,
+    LOCAL_FILE_STORE,
     OPENAI_API_BASE,
     OPENAI_API_KEY,
     OPENAI_LLM_MODEL,
@@ -85,9 +88,29 @@ def get_retriever() -> BaseRetriever:
         text_key="text",
         embedding=get_embeddings_model(),
         by_text=False,
-        attributes=["source", "title"],
+        attributes=["source", "title", "doc_id"],
     )
+
     return weaviate_client.as_retriever(search_kwargs=dict(k=RETRIEVER_K))
+
+
+file_store = LocalFileStore(LOCAL_FILE_STORE)
+
+
+def retrieve_parent_doc(docs):
+    # __import__("pdb").set_trace()
+    big_doc_uids = []
+    for doc in docs:
+        big_doc_uids.append(doc.metadata["doc_id"])
+    out = file_store.mget(big_doc_uids)
+
+    outdocs = []
+    for dump in out:
+        enc = dump.decode("utf-8")
+        serdoc = loads(enc)
+        outdocs.append(serdoc)
+
+    return outdocs
 
 
 def create_retriever_chain(
@@ -100,21 +123,23 @@ def create_retriever_chain(
         run_name="CondenseQuestion",
     )
     conversation_chain = condense_question_chain | retriever
+    retrieval_chain_with_no_history = (
+        RunnableLambda(itemgetter("question")).with_config(
+            run_name="Itemgetter:question"
+        )
+        | retriever
+        | RunnableLambda(retrieve_parent_doc)
+    ).with_config(run_name="RetrievalChainWithNoHistory")
+    retrieval_chain_with_history = (
+        RunnableLambda(lambda x: bool(x.get("chat_history"))).with_config(
+            run_name="HasChatHistoryCheck"
+        ),
+        conversation_chain.with_config(run_name="RetrievalChainWithHistory"),
+    )
 
     return RunnableBranch(
-        (
-            RunnableLambda(lambda x: bool(x.get("chat_history"))).with_config(
-                run_name="HasChatHistoryCheck"
-            ),
-            conversation_chain.with_config(
-                run_name="RetrievalChainWithHistory"),
-        ),
-        (
-            RunnableLambda(itemgetter("question")).with_config(
-                run_name="Itemgetter:question"
-            )
-            | retriever
-        ).with_config(run_name="RetrievalChainWithNoHistory"),
+        retrieval_chain_with_history,
+        retrieval_chain_with_no_history,
     ).with_config(run_name="RouteDependingOnChatHistory")
 
 
@@ -132,8 +157,7 @@ def serialize_history(request: ChatRequest):
 
     for message in chat_history:
         if message.get("human") is not None:
-            converted_chat_history.append(
-                HumanMessage(content=message["human"]))
+            converted_chat_history.append(HumanMessage(content=message["human"]))
         if message.get("ai") is not None:
             converted_chat_history.append(AIMessage(content=message["ai"]))
 

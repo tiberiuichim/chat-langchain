@@ -6,9 +6,9 @@ from langchain_community.document_loaders import (
     Docx2txtLoader,
     UnstructuredFileLoader,
     UnstructuredMarkdownLoader,
+    PyMuPDFLoader,
     # PDFMinerLoader,
     # PyPDFLoader,
-    PyMuPDFLoader,
 )
 
 import os
@@ -26,6 +26,7 @@ WEAVIATE_URL = os.environ["WEAVIATE_URL"]
 WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
 RECORD_MANAGER_DB_URL = os.environ["RECORD_MANAGER_DB_URL"]
 DOCUMENTS_DIR = os.environ["DOCUMENTS_DIR"] or "data/documents"
+LOCAL_FILE_STORE = os.environ["LOCAL_FILE_STORE"] or "data/localfilestore"
 
 SPLITTER_CHUNK_SIZE = int(os.environ["SPLITTER_CHUNK_SIZE"])
 SPLITTER_CHUNK_OVERLAP = int(os.environ["SPLITTER_CHUNK_OVERLAP"])

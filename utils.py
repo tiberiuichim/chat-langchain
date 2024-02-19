@@ -48,8 +48,7 @@ def load_document_batch(filepaths):
     # create a thread pool
     with ThreadPoolExecutor(len(filepaths)) as exe:
         # load files
-        futures = [exe.submit(load_single_document, name)
-                   for name in filepaths]
+        futures = [exe.submit(load_single_document, name) for name in filepaths]
         # collect data
         if futures is None:
             file_log("Some files failed to submit")
@@ -73,7 +72,7 @@ def load_documents_from_paths(paths: list[str]) -> list[Document]:
         # split the load operations into chunks
         for i in range(0, len(paths), chunksize):
             # select a chunk of filenames
-            filepaths = paths[i: (i + chunksize)]
+            filepaths = paths[i : (i + chunksize)]
             # submit the task
             try:
                 future = executor.submit(load_document_batch, filepaths)
@@ -147,29 +146,25 @@ extension_handlers = {
     "tokenized": None,
 }
 
-def split_documents_tiktoken(documents: list[Document]) -> list[Document]:
-    chunk_size: int = 500
-    chunk_overlap: int = 0
 
-    texts = []
-    for doc in documents:
-        text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-            chunk_size=chunk_size, chunk_overlap=chunk_overlap
-        )
+def split_documents_tiktoken(
+    documents: list[Document], chunk_size: int = 400, chunk_overlap: int = 0
+) -> list[Document]:
+    text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        chunk_size=chunk_size, chunk_overlap=chunk_overlap
+    )
+    return text_splitter.split_documents(documents)
 
-        chunks = text_splitter.split_documents(documents)
-        texts.extend(chunks or [])
 
-    return texts
+from_huggingface_tokenizer = CharacterTextSplitter.from_huggingface_tokenizer
+
 
 def split_documents(documents: list[Document], tokenizer=None) -> list[Document]:
     # Splits documents for correct Text Splitter
 
     docs = defaultdict(list)
     if tokenizer:
-        huggingface_token_splitter = CharacterTextSplitter.from_huggingface_tokenizer(
-            tokenizer
-        )
+        huggingface_token_splitter = from_huggingface_tokenizer(tokenizer)
         extension_handlers["tokenized"] = huggingface_token_splitter
 
     for doc in documents:
@@ -183,17 +178,10 @@ def split_documents(documents: list[Document], tokenizer=None) -> list[Document]
 
             docs[file_extension].append(doc)
 
-    texts = []
+    outdocs = []
     for ext, ext_docs in docs.items():
         splitter = extension_handlers[ext]
-        for doc in ext_docs:
-            chunks = []
-            try:
-                chunks = splitter.split_documents([doc])
-            except:
-                print("Cannot split", doc)
-                __import__("pdb").set_trace()
+        split_docs = splitter.split_documents(ext_docs)
+        outdocs.extend(split_docs)
 
-            texts.extend(chunks or [])
-
-    return texts
+    return outdocs
