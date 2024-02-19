@@ -43,14 +43,21 @@ logger = logging.getLogger(__name__)
 # retriever.add_documents(docs, ids=None)
 
 
-def derive_documents(docs, parent_splitter, child_splitter):
+def derive_documents(docs):
     # inspired ParentDocumentRetriever.add_documents
+
+    parent_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        chunk_size=10000, chunk_overlap=0
+    )
+    child_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        chunk_size=400, chunk_overlap=0
+    )
     id_key = "doc_id"
     documents = parent_splitter.split_documents(docs)
     doc_ids = [str(uuid.uuid4()) for _ in documents]
 
-    docs = []
-    full_docs = []
+    docs_to_index = []
+    docs_to_store = []
     for i, doc in enumerate(documents):
         # print("Process", doc)
         _id = doc_ids[i]
@@ -58,13 +65,13 @@ def derive_documents(docs, parent_splitter, child_splitter):
         for _doc in sub_docs:
             _doc.metadata = deepcopy(doc.metadata)
             _doc.metadata[id_key] = _id
-        docs.extend(sub_docs)
-        full_docs.append((_id, doc))
+        docs_to_index.extend(sub_docs)
+        docs_to_store.append((_id, doc))
 
     # docs will be indexed in the vector database, as they're short
     # full_docs will be indexed in the document store, as they're the source
     # to be retrieved with the ParentDocumentRetriever
-    return docs, full_docs
+    return docs_to_index, docs_to_store
 
 
 def ingest_docs(documents, cleanup: Cleanup = "full"):
@@ -77,18 +84,9 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
             doc.metadata["file_path"] = doc.metadata["source"]
 
     embedding = get_embeddings_model()
-
-    parent_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-        chunk_size=10000, chunk_overlap=0
-    )
-    child_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-        chunk_size=400, chunk_overlap=0
-    )
     # SemanticChunker(embedding)
 
-    docs_to_index, docs_to_store = derive_documents(
-        documents, parent_splitter, child_splitter
-    )
+    docs_to_index, docs_to_store = derive_documents(documents)
 
     # TODO: take care of dedupe in file_store
     file_store = LocalFileStore(LOCAL_FILE_STORE)
