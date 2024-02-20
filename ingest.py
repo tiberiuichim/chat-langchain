@@ -24,6 +24,12 @@ from constants import (
     LOCAL_FILE_STORE,
 )
 
+from langchain_core.documents import Document
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from langchain.output_parsers.openai_functions import JsonKeyOutputFunctionsParser
+
 from utils import load_documents  # , split_documents, split_documents_tiktoken
 
 logging.basicConfig(level=logging.INFO)
@@ -42,15 +48,61 @@ logger = logging.getLogger(__name__)
 # )
 # retriever.add_documents(docs, ids=None)
 
+def summarize(docs):
+    #import pdb; pdb.set_trace()
+    chain = (
+        {"doc": lambda x: x.page_content}
+        | ChatPromptTemplate.from_template("Summarize the following document:\n\n{doc}")
+        | ChatOpenAI(max_retries=0, model="openchat/openchat-3.5-1210")
+        | StrOutputParser()
+    )
+    summaries = chain.batch(docs, {"max_concurrency": 5})
+    #import pdb; pdb.set_trace()
+    return summaries
+
+def generate_queries(docs):
+    #import pdb; pdb.set_trace()
+    functions = [
+        {
+            "name": "hypothetical_questions",
+            "description": "Generate hypothetical questions",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "questions": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                    },
+                },
+                "required": ["questions"],
+            },
+        }
+    ]
+    chain = (
+        {"doc": lambda x: x.page_content}
+        # Only asking for 3 hypothetical questions, but this could be adjusted
+        | ChatPromptTemplate.from_template(
+            "Generate a list of exactly 3 hypothetical questions that the below document could be used to answer:\n\n{doc}"
+        )
+        | ChatOpenAI(max_retries=0, model="openchat/openchat-3.5-1210").bind(
+            functions=functions, function_call={"name": "hypothetical_questions"}
+        )
+        | JsonKeyOutputFunctionsParser(key_name="questions")
+    )
+    #import pdb; pdb.set_trace()
+    questions = chain.batch(docs, {"max_concurrency": 5})
+    #import pdb; pdb.set_trace()
 
 def derive_documents(docs):
     # inspired ParentDocumentRetriever.add_documents
-
     parent_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-        chunk_size=10000, chunk_overlap=0
+        chunk_size=1000, chunk_overlap=0
     )
-    child_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+    big_child_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
         chunk_size=400, chunk_overlap=0
+    )
+    small_child_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+        chunk_size=150, chunk_overlap=0
     )
     id_key = "doc_id"
     documents = parent_splitter.split_documents(docs)
@@ -61,20 +113,40 @@ def derive_documents(docs):
     for i, doc in enumerate(documents):
         # print("Process", doc)
         _id = doc_ids[i]
-        sub_docs = child_splitter.split_documents([doc])
-        for _doc in sub_docs:
+        _sub_docs = big_child_splitter.split_documents([doc])
+        _small_sub_docs = []
+        for _doc in _sub_docs:
+            small_sub_docs = small_child_splitter.split_documents([_doc])
+            if len(small_sub_docs) > 1:
+                _small_sub_docs.extend(small_sub_docs)
+
+        _sub_docs.extend(small_sub_docs)
+
+
+        _summaries = summarize(_sub_docs)
+        _summary_docs = [Document(page_content=s) for s in _summaries]
+
+        _sub_docs.extend(_summary_docs)
+        import pdb; pdb.set_trace()
+        for _doc in _sub_docs:
             _doc.metadata = deepcopy(doc.metadata)
             _doc.metadata[id_key] = _id
-        docs_to_index.extend(sub_docs)
+
+        docs_to_index.extend(_sub_docs)
         docs_to_store.append((_id, doc))
 
+        
+
+    #questions = generate_queries(docs_to_index)
     # docs will be indexed in the vector database, as they're short
     # full_docs will be indexed in the document store, as they're the source
     # to be retrieved with the ParentDocumentRetriever
+    import pdb; pdb.set_trace()
     return docs_to_index, docs_to_store
 
 
 def ingest_docs(documents, cleanup: Cleanup = "full"):
+
     for doc in documents:
         if "source" not in doc.metadata:
             doc.metadata["source"] = ""
@@ -83,10 +155,24 @@ def ingest_docs(documents, cleanup: Cleanup = "full"):
         if "file_path" not in doc.metadata:
             doc.metadata["file_path"] = doc.metadata["source"]
 
+
+
+
     embedding = get_embeddings_model()
     # SemanticChunker(embedding)
 
     docs_to_index, docs_to_store = derive_documents(documents)
+
+    fallback_total_pages = len(documents)
+    for idx, doc in enumerate(docs_to_index):
+        if "page" not in doc.metadata:
+            doc.metadata["page"] = idx + 1
+
+        title = doc.metadata["title"]
+        page = doc.metadata.get("page", 0)
+        total_pages = doc.metadata.get("total_pages", fallback_total_pages)
+        doc.metadata["title"] = f"{title} - page {page}/{total_pages}"
+
 
     # TODO: take care of dedupe in file_store
     file_store = LocalFileStore(LOCAL_FILE_STORE)
